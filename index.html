@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sincereware — Software made in good faith</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html { -webkit-font-smoothing: antialiased; }
+  body { margin: 0; background: #f4f1ea; color: #16130f; }
+  ::selection { background: #e23b28; color: #f4f1ea; }
+  a { color: #1b3fd0; text-decoration: none; }
+  a:hover { color: #e23b28; }
+  a[data-cta]:hover { background: #1b3fd0 !important; }
+  a[data-cta-outline]:hover { border-color: #16130f !important; background: rgba(22,19,15,0.05) !important; }
+  a[data-cta-solid]:hover { background: #16130f !important; }
+  button[data-copy]:hover { border-color: #16130f !important; background: rgba(22,19,15,0.05) !important; }
+  @keyframes swRule { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes swDrift {
+    0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+    25%  { transform: translate3d(34px, -22px, 0) rotate(12deg); }
+    50%  { transform: translate3d(76px, 6px, 0) rotate(-8deg); }
+    75%  { transform: translate3d(30px, -14px, 0) rotate(6deg); }
+    100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  }
+  @keyframes swFloatA { 0%, 100% { transform: translate3d(0,0,0) rotate(var(--r, 0deg)); } 50% { transform: translate3d(6px,-13px,0) rotate(calc(var(--r, 0deg) + 3deg)); } }
+  @keyframes swFloatB { 0%, 100% { transform: translate3d(0,0,0) rotate(var(--r, 0deg)); } 50% { transform: translate3d(-9px,-8px,0) rotate(calc(var(--r, 0deg) - 4deg)); } }
+  @keyframes swFloatC { 0%, 100% { transform: translate3d(0,0,0) rotate(var(--r, 0deg)); } 33% { transform: translate3d(5px,-6px,0) rotate(calc(var(--r, 0deg) + 2deg)); } 66% { transform: translate3d(-6px,-11px,0) rotate(calc(var(--r, 0deg) - 2deg)); } }
+  @keyframes swFlutter { 0%, 100% { transform: translate3d(0,0,0) rotate(var(--r, 0deg)) scaleX(1); } 40% { transform: translate3d(14px,-18px,0) rotate(calc(var(--r, 0deg) + 7deg)) scaleX(0.86); } 70% { transform: translate3d(4px,-6px,0) rotate(calc(var(--r, 0deg) - 3deg)) scaleX(1); } }
+  @media (prefers-reduced-motion: reduce) {
+    [data-garden] * { animation: none !important; }
+  }
+  @media print {
+    [data-reveal] { opacity: 1 !important; transform: none !important; }
+    [data-rule] { transform: scaleX(1) !important; }
+  }
+</style>
+</head>
+<body>
+<div style="position: relative; min-height: 100vh; background: #f4f1ea; color: #16130f; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; overflow-x: hidden;">
+
+  <div aria-hidden="true" style="position: fixed; inset: 0; pointer-events: none; z-index: 60; opacity: 0.05; mix-blend-mode: multiply; background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E&quot;);"></div>
+
+  <header style="position: sticky; top: 0; z-index: 40; background: rgba(244,241,234,0.92); backdrop-filter: blur(6px); border-bottom: 1px solid rgba(22,19,15,0.14);">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 14px clamp(20px, 5vw, 64px); display: flex; align-items: baseline; justify-content: space-between; gap: 24px;">
+      <a href="#top" style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: #16130f;">Sincereware</a>
+      <nav style="display: flex; flex-wrap: wrap; gap: clamp(10px, 2vw, 26px); font-family: 'IBM Plex Mono', monospace; font-size: clamp(9.5px, 1.1vw, 11px); letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; justify-content: flex-end;">
+        <a href="#standard" style="color: rgba(22,19,15,0.62);">Standard</a>
+        <a href="#rate" style="color: rgba(22,19,15,0.62);">Community Rate</a>
+        <a href="#receipt" style="color: rgba(22,19,15,0.62);">Receipt</a>
+        <a href="#practice" style="color: rgba(22,19,15,0.62);">In practice</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top" style="max-width: 1180px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 64px);">
+
+    <section data-screen-label="Hero" style="padding: clamp(56px, 12vh, 132px) 0 clamp(48px, 9vh, 104px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 0;">
+      <div data-reveal="1" style="display: flex; align-items: center; gap: 16px; margin-bottom: clamp(28px, 6vh, 56px);">
+        <span style="width: 9px; height: 9px; background: #e23b28; display: block;"></span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(22,19,15,0.6);">A product standard, version 0.1</span>
+      </div>
+      <h1 data-reveal="2" style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: clamp(46px, 9.4vw, 132px); line-height: 0.94; letter-spacing: -0.025em; margin: 0; max-width: 15ch; text-wrap: balance;">Software made in good&nbsp;faith.</h1>
+      <div data-garden="1" aria-hidden="true" style="position: relative; height: clamp(190px, 30vh, 300px); margin-top: clamp(18px, 3vh, 34px);">
+        <div style="position: absolute; left: 12%; bottom: 62%; width: 7px; height: 7px; background: #e23b28; animation: swDrift 17s ease-in-out infinite;"></div>
+        <div style="position: absolute; left: 46%; bottom: 74%; width: 6px; height: 6px; border: 1px solid #1b3fd0; border-radius: 50%; animation: swDrift 23s ease-in-out infinite -6s;"></div>
+        <div style="position: absolute; left: 78%; bottom: 55%; width: 6px; height: 6px; background: #4b7f52; transform: rotate(45deg); animation: swDrift 20s ease-in-out infinite -13s;"></div>
+        <div style="position: absolute; inset: 0;">
+          <div style="position: absolute; left: 1%; top: 18%; width: clamp(84px, 12vw, 158px); height: clamp(84px, 12vw, 158px); --r: -7deg; transform: rotate(-7deg); animation: swFloatA 9.5s ease-in-out 0s infinite; filter: drop-shadow(0 6px 14px rgba(22,19,15,0.14));">
+            <img src="assets/sw-pansy-1.webp" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;" />
+          </div>
+          <div style="position: absolute; left: 17%; top: 2%; width: clamp(60px, 8vw, 104px); height: clamp(60px, 8vw, 104px); --r: 9deg; transform: rotate(9deg); animation: swFlutter 11s ease-in-out -1.5s infinite; filter: drop-shadow(0 6px 14px rgba(22,19,15,0.14));">
+            <img src="assets/sw-butterfly-1.webp" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;" />
+          </div>
+          <div style="position: absolute; left: 27%; top: 34%; width: clamp(74px, 10vw, 132px); height: clamp(74px, 10vw, 132px); --r: 5deg; transform: rotate(5deg); animation: swFloatC 13s ease-in-out -4s infinite; filter: drop-shadow(0 6px 14px rgba(22,19,15,0.14));">
+            <img src="assets/sw-pansy-2.webp" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;" />
+          </div>
+          <div style="position: absolute; left: 41%; top: 6%; width: clamp(56px, 7.5vw, 98px); height: clamp(56px, 7.5vw, 98px); --r: -14deg; transform: rotate(-14deg); animation: swFloatB 10.5s ease-in-out -2s infinite; filter: drop-shadow(0 6px 14px rgba(22,19,15,0.14));">
+            <img src="assets/sw-leaf-1.webp" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;" />
+          </div>
+          <div style="position: absolute; left: 53%; top: 30%; width: clamp(90px, 12.5vw, 168px); height: clamp(90px, 12.5vw, 168px); --r: 11deg; transform: rotate(11deg); animation: swFloatA 12s ease-in-out -6s infinite; filter: drop-shadow(0 6px 14px rgba(22,19,15,0.14));">
+            <img src="assets/sw-pansy-3.webp" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;" />
+          </div>
+          <div style="position: absolute; left: 69%; top: 4%; width: clamp(62px, 8.5vw, 112px); height: clamp(62px, 8.5vw, 112px); --r: -6deg; transform: rotate(-6deg); animation: swFlutter 9s ease-in-out -3.5s infinite; filter: drop-shadow(0 6px 14px rgba(22,19,15,0.14));">
+            <img src="assets/sw-butterfly-2.webp" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;" />
+          </div>
+          <div style="position: absolute; left: 76%; top: 34%; width: clamp(70px, 9.5vw, 126px); height: clamp(70px, 9.5vw, 126px); --r: -11deg; transform: rotate(-11deg); animation: swFloatC 14s ease-in-out -8s infinite; filter: drop-shadow(0 6px 14px rgba(22,19,15,0.14));">
+            <img src="assets/sw-pansy-4.webp" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;" />
+          </div>
+          <div style="position: absolute; left: 87%; top: 8%; width: clamp(52px, 7vw, 92px); height: clamp(52px, 7vw, 92px); --r: 7deg; transform: rotate(7deg); animation: swFloatB 11.5s ease-in-out -5s infinite; filter: drop-shadow(0 6px 14px rgba(22,19,15,0.14));">
+            <img src="assets/sw-sprig-1.webp" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;" />
+          </div>
+        </div>
+      </div>
+      <div data-rule="1" style="height: 1px; background: #16130f; margin: 0 0 clamp(22px, 4vh, 36px); transform-origin: left center;"></div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: clamp(20px, 4vw, 56px); align-items: start;">
+        <p data-reveal="3" style="font-family: Newsreader, Georgia, serif; font-size: clamp(22px, 2.6vw, 32px); line-height: 1.34; margin: 0; letter-spacing: -0.01em;">Useful tools. Honest pricing. <span style="color: #1b3fd0;">No extraction.</span></p>
+        <p data-reveal="4" style="font-size: 15px; line-height: 1.68; margin: 0; color: rgba(22,19,15,0.74); max-width: 46ch;">Sincereware is software designed as a useful tool, funded honestly, and respectful of the user's attention, privacy, and agency. Not a certification, not a directory — a standard you can check against a product.</p>
+        <div data-reveal="5" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: start;">
+          <a href="#standard" data-cta style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; padding: 13px 20px; background: #16130f; color: #f4f1ea; display: inline-block;">Read the standard</a>
+          <a href="#practice" data-cta-outline style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; padding: 13px 20px; border: 1px solid rgba(22,19,15,0.34); color: #16130f; display: inline-block;">See it in practice</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="standard" data-screen-label="The standard" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
+      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+        <div style="position: sticky; top: 84px;">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">01</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">The standard</div>
+        </div>
+        <div>
+          <h2 data-reveal="6" style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: clamp(30px, 4.4vw, 54px); line-height: 1.06; letter-spacing: -0.02em; margin: 0 0 clamp(28px, 5vh, 52px); max-width: 20ch;">A tool, not a trap.</h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); gap: 0 clamp(24px, 4vw, 56px);">
+            <div data-reveal="7" style="border-top: 1px solid rgba(22,19,15,0.2); padding: 18px 0 26px;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: rgba(22,19,15,0.42); margin-bottom: 10px;">i</div>
+              <h3 style="font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 21px; line-height: 1.2; margin: 0 0 8px;">Useful and restrained</h3>
+              <p style="font-size: 14.5px; line-height: 1.62; margin: 0; color: rgba(22,19,15,0.72);">Make a clear thing that does what it promises. Complexity added to manufacture dependency is a defect, not a roadmap.</p>
+            </div>
+            <div data-reveal="8" style="border-top: 1px solid rgba(22,19,15,0.2); padding: 18px 0 26px;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: rgba(22,19,15,0.42); margin-bottom: 10px;">ii</div>
+              <h3 style="font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 21px; line-height: 1.2; margin: 0 0 8px;">Users are not inventory</h3>
+              <p style="font-size: 14.5px; line-height: 1.62; margin: 0; color: rgba(22,19,15,0.72);">No advertising or surveillance as the business model. Attention and behaviour are not the product being sold.</p>
+            </div>
+            <div data-reveal="9" style="border-top: 1px solid rgba(22,19,15,0.2); padding: 18px 0 26px;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: rgba(22,19,15,0.42); margin-bottom: 10px;">iii</div>
+              <h3 style="font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 21px; line-height: 1.2; margin: 0 0 8px;">Honest payment</h3>
+              <p style="font-size: 14.5px; line-height: 1.62; margin: 0; color: rgba(22,19,15,0.72);">Paying is fine when it funds real value or real ongoing cost. The objection is extraction, not revenue.</p>
+            </div>
+            <div data-reveal="10" style="border-top: 1px solid rgba(22,19,15,0.2); padding: 18px 0 26px;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: rgba(22,19,15,0.42); margin-bottom: 10px;">iv</div>
+              <h3 style="font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 21px; line-height: 1.2; margin: 0 0 8px;">No unjustified subscriptions</h3>
+              <p style="font-size: 14.5px; line-height: 1.62; margin: 0; color: rgba(22,19,15,0.72);">Recurring payment needs recurring value, service, or cost. What you bought once stays yours when you stop paying.</p>
+            </div>
+            <div data-reveal="11" style="border-top: 1px solid rgba(22,19,15,0.2); padding: 18px 0 26px;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: rgba(22,19,15,0.42); margin-bottom: 10px;">v</div>
+              <h3 style="font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 21px; line-height: 1.2; margin: 0 0 8px;">Agency, including the exit</h3>
+              <p style="font-size: 14.5px; line-height: 1.62; margin: 0; color: rgba(22,19,15,0.72);">Clear pricing, clear limits, accessible data, and a real ability to leave without your work being held hostage.</p>
+            </div>
+            <div data-reveal="12" style="border-top: 1px solid rgba(22,19,15,0.2); padding: 18px 0 26px;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: rgba(22,19,15,0.42); margin-bottom: 10px;">vi</div>
+              <h3 style="font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 21px; line-height: 1.2; margin: 0 0 8px;">No behavioural coercion</h3>
+              <p style="font-size: 14.5px; line-height: 1.62; margin: 0; color: rgba(22,19,15,0.72);">No manufactured urgency, streak anxiety, false scarcity, or notification loops that exist mainly to retain people.</p>
+            </div>
+            <div data-reveal="13" style="border-top: 1px solid rgba(22,19,15,0.2); padding: 18px 0 26px;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: rgba(22,19,15,0.42); margin-bottom: 10px;">vii</div>
+              <h3 style="font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 21px; line-height: 1.2; margin: 0 0 8px;">Growth shared with users</h3>
+              <p style="font-size: 14.5px; line-height: 1.62; margin: 0; color: rgba(22,19,15,0.72);">Where a product runs on recurring support, scale should lower the burden on the people who created that scale.</p>
+            </div>
+            <div data-reveal="14" style="border-top: 1px solid rgba(22,19,15,0.2); padding: 18px 0 26px;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: rgba(22,19,15,0.42); margin-bottom: 10px;">viii</div>
+              <h3 style="font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 21px; line-height: 1.2; margin: 0 0 8px;">Inspectable claims</h3>
+              <p style="font-size: 14.5px; line-height: 1.62; margin: 0; color: rgba(22,19,15,0.72);">Every commitment above has to be checkable in the product itself. That is what the receipt is for.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="isnot" data-screen-label="What it is not" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
+      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+        <div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">02</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">Boundaries</div>
+        </div>
+        <div>
+          <h2 data-reveal="15" style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: clamp(30px, 4.4vw, 54px); line-height: 1.06; letter-spacing: -0.02em; margin: 0 0 clamp(24px, 4vh, 44px); max-width: 20ch;">What Sincereware is not.</h2>
+          <ul style="list-style: none; margin: 0; padding: 0; display: grid; gap: 0; max-width: 68ch;">
+            <li data-reveal="16" style="display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 14px; align-items: baseline; padding: 15px 0; border-bottom: 1px solid rgba(22,19,15,0.14);">
+              <span style="color: #e23b28; font-size: 15px; line-height: 1;">—</span>
+              <span style="font-size: 15.5px; line-height: 1.6;">Not "everything must be free." Software that cannot survive is not automatically ethical.</span>
+            </li>
+            <li data-reveal="17" style="display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 14px; align-items: baseline; padding: 15px 0; border-bottom: 1px solid rgba(22,19,15,0.14);">
+              <span style="color: #e23b28; font-size: 15px; line-height: 1;">—</span>
+              <span style="font-size: 15.5px; line-height: 1.6;">Not anti-business. A good product can charge fairly and profitably.</span>
+            </li>
+            <li data-reveal="18" style="display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 14px; align-items: baseline; padding: 15px 0; border-bottom: 1px solid rgba(22,19,15,0.14);">
+              <span style="color: #e23b28; font-size: 15px; line-height: 1;">—</span>
+              <span style="font-size: 15.5px; line-height: 1.6;">Not a badge, a scheme, or a certification. Nobody audits anybody here.</span>
+            </li>
+            <li data-reveal="19" style="display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 14px; align-items: baseline; padding: 15px 0; border-bottom: 1px solid rgba(22,19,15,0.14);">
+              <span style="color: #e23b28; font-size: 15px; line-height: 1;">—</span>
+              <span style="font-size: 15.5px; line-height: 1.6;">Not a promise that every product will have a Community Rate.</span>
+            </li>
+            <li data-reveal="20" style="display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 14px; align-items: baseline; padding: 15px 0; border-bottom: 1px solid rgba(22,19,15,0.14);">
+              <span style="color: #e23b28; font-size: 15px; line-height: 1;">—</span>
+              <span style="font-size: 15.5px; line-height: 1.6;">Not a movement, yet. One product practises this properly. That is the honest count.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="rate" data-screen-label="Community Rate" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
+      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+        <div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">03</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">Pricing model</div>
+        </div>
+        <div>
+          <h2 data-reveal="21" style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: clamp(30px, 4.4vw, 54px); line-height: 1.06; letter-spacing: -0.02em; margin: 0 0 18px; max-width: 22ch;">The Community Rate.</h2>
+          <p data-reveal="22" style="font-family: Newsreader, Georgia, serif; font-size: clamp(18px, 2vw, 23px); line-height: 1.48; margin: 0 0 clamp(28px, 5vh, 48px); max-width: 52ch; color: rgba(22,19,15,0.86);">A feature costs money to run and improve. As more people support it, the price falls — for everyone, including the people who joined first.</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: clamp(28px, 4vw, 56px); align-items: start;">
+            <figure data-reveal="23" style="margin: 0;">
+              <div style="border: 1px solid rgba(22,19,15,0.2); background: rgba(255,255,255,0.42); padding: 20px 20px 14px;">
+                <div style="display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-bottom: 14px;">
+                  <span>Price per month</span>
+                  <span style="color: #e23b28;">Illustrative</span>
+                </div>
+                <svg viewBox="0 0 420 200" width="100%" height="auto" role="img" aria-label="Illustrative curve: monthly price falls from A$5 to A$1 as supporters increase" style="display: block; overflow: visible;">
+                  <line x1="0" y1="20" x2="420" y2="20" stroke="#16130f" stroke-opacity="0.1"></line>
+                  <line x1="0" y1="70" x2="420" y2="70" stroke="#16130f" stroke-opacity="0.1"></line>
+                  <line x1="0" y1="120" x2="420" y2="120" stroke="#16130f" stroke-opacity="0.1"></line>
+                  <line x1="0" y1="170" x2="420" y2="170" stroke="#16130f" stroke-opacity="0.28"></line>
+                  <path id="sw-curve" d="M0,20 C120,26 150,96 210,120 C280,148 330,164 420,168" fill="none" stroke="#1b3fd0" stroke-width="2"></path>
+                  <circle cx="0" cy="20" r="3.5" fill="#e23b28"></circle>
+                  <circle cx="420" cy="168" r="3.5" fill="#4b7f52"></circle>
+                  <text x="6" y="12" font-family="IBM Plex Mono, monospace" font-size="11" fill="#16130f">A$5</text>
+                  <text x="392" y="186" font-family="IBM Plex Mono, monospace" font-size="11" fill="#16130f">A$1</text>
+                </svg>
+                <div style="display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 16px;">
+                  <span>Few supporters</span>
+                  <span>Many supporters</span>
+                </div>
+              </div>
+              <figcaption style="font-size: 12.5px; line-height: 1.55; color: rgba(22,19,15,0.58); margin-top: 12px; max-width: 46ch;">Shape only. Real thresholds get modelled from net revenue after fees, tax, support, development time, and a cash buffer — never chosen because the number looks tidy.</figcaption>
+            </figure>
+            <div style="display: grid; gap: 0;">
+              <div data-reveal="24" style="border-top: 1px solid rgba(22,19,15,0.2); padding: 14px 0 18px;">
+                <h3 style="font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 19px; margin: 0 0 6px;">Reductions apply to everyone</h3>
+                <p style="font-size: 14.5px; line-height: 1.6; margin: 0; color: rgba(22,19,15,0.72);">When a threshold is genuinely met, existing subscribers drop to the new price automatically. No re-signing, no loyalty penalty.</p>
+              </div>
+              <div data-reveal="25" style="border-top: 1px solid rgba(22,19,15,0.2); padding: 14px 0 18px;">
+                <h3 style="font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 19px; margin: 0 0 6px;">Collective, not referral bait</h3>
+                <p style="font-size: 14.5px; line-height: 1.6; margin: 0; color: rgba(22,19,15,0.72);">No "invite ten friends for free access." The benefit is shared and gradual, or it isn't offered.</p>
+              </div>
+              <div data-reveal="26" style="border-top: 1px solid rgba(22,19,15,0.2); padding: 14px 0 18px;">
+                <h3 style="font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 19px; margin: 0 0 6px;">No promise that prices never rise</h3>
+                <p style="font-size: 14.5px; line-height: 1.6; margin: 0; color: rgba(22,19,15,0.72);">Prices fall as scale allows. If costs materially change, that gets explained before anything changes.</p>
+              </div>
+              <div data-reveal="27" style="border-top: 1px solid rgba(22,19,15,0.2); border-bottom: 1px solid rgba(22,19,15,0.2); padding: 14px 0 18px;">
+                <h3 style="font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 19px; margin: 0 0 6px;">Only for real ongoing cost</h3>
+                <p style="font-size: 14.5px; line-height: 1.6; margin: 0; color: rgba(22,19,15,0.72);">One-time purchases stay owned. A recurring price is only for something with recurring value or expense behind it.</p>
+              </div>
+            </div>
+          </div>
+          <p data-reveal="28" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; line-height: 1.7; color: rgba(22,19,15,0.55); margin: 22px 0 0; max-width: 60ch;">Status: proposed. No product currently runs a Community Rate, and no membership numbers are published here because there are none to publish.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="receipt" data-screen-label="The receipt" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
+      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+        <div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">04</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">The device</div>
+        </div>
+        <div>
+          <h2 data-reveal="29" style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: clamp(30px, 4.4vw, 54px); line-height: 1.06; letter-spacing: -0.02em; margin: 0 0 18px; max-width: 22ch;">The Sincereware Receipt.</h2>
+          <p data-reveal="30" style="font-size: 15.5px; line-height: 1.68; margin: 0 0 clamp(28px, 5vh, 48px); max-width: 56ch; color: rgba(22,19,15,0.76);">Six lines, published by the product itself. It is what makes the ethic checkable instead of decorative: anyone can compare the receipt to what the software actually does.</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: clamp(24px, 4vw, 48px); align-items: start;">
+            <div data-reveal="31" style="border: 1px solid #16130f; background: #fbfaf6;">
+              <div style="border-bottom: 1px solid rgba(22,19,15,0.2); padding: 12px 18px; display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Sincereware Receipt</span>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.45);">Template</span>
+              </div>
+              <dl style="margin: 0; padding: 18px; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; line-height: 1.85; display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 0 8px;">
+                <dt style="color: #1b3fd0;">Free</dt><dd style="margin: 0; color: rgba(22,19,15,0.55);">the core capability that stays genuinely useful</dd>
+                <dt style="color: #1b3fd0;">Paid</dt><dd style="margin: 0; color: rgba(22,19,15,0.55);">specific features, services, or ongoing costs</dd>
+                <dt style="color: #1b3fd0;">Data</dt><dd style="margin: 0; color: rgba(22,19,15,0.55);">what is collected, in plain language</dd>
+                <dt style="color: #1b3fd0;">Never sold</dt><dd style="margin: 0; color: rgba(22,19,15,0.55);">data, attention, behavioural profiles</dd>
+                <dt style="color: #1b3fd0;">Leaving</dt><dd style="margin: 0; color: rgba(22,19,15,0.55);">export, deletion, and what stays yours</dd>
+                <dt style="color: #1b3fd0;">Growth</dt><dd style="margin: 0; color: rgba(22,19,15,0.55);">what changes for users as the product scales</dd>
+              </dl>
+              <div style="border-top: 1px solid rgba(22,19,15,0.2); padding: 11px 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.45);">Six lines, plain language</span>
+                <button type="button" id="sw-copy-receipt" data-copy style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; background: none; border: 1px solid rgba(22,19,15,0.3); padding: 7px 11px; cursor: pointer; color: #16130f;">Copy template</button>
+              </div>
+            </div>
+            <div>
+              <h3 data-reveal="32" style="font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 22px; margin: 0 0 12px;">Why six lines</h3>
+              <p data-reveal="33" style="font-size: 15px; line-height: 1.68; margin: 0 0 16px; color: rgba(22,19,15,0.74);">A privacy policy is written to be survivable in court. A receipt is written to be read in thirty seconds by the person paying. The constraint is the point: if a line cannot be answered plainly, the product has a decision left to make, not a wording problem.</p>
+              <p data-reveal="34" style="font-size: 15px; line-height: 1.68; margin: 0; color: rgba(22,19,15,0.74);">It sits in the product — settings, pricing page, or about screen — not only on a marketing site. Claims belong next to the thing they describe.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="practice" data-screen-label="In practice" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
+      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+        <div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">05</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">One case</div>
+        </div>
+        <div>
+          <div data-reveal="35" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #4b7f52; margin-bottom: 14px;">In practice — Consistently</div>
+          <h2 data-reveal="36" style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: clamp(30px, 4.4vw, 54px); line-height: 1.06; letter-spacing: -0.02em; margin: 0 0 22px; max-width: 24ch;">A habit tracker built around returning, not perfection.</h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: clamp(24px, 4vw, 52px); align-items: start;">
+            <div>
+              <p data-reveal="37" style="font-size: 15.5px; line-height: 1.7; margin: 0 0 16px; color: rgba(22,19,15,0.78);">Most habit apps are built on loss aversion: a streak you can break, and an app that makes sure you feel it. Consistently is built the other way around. Missing a day is ordinary. The design question is what makes returning easy, not what makes leaving painful.</p>
+              <p data-reveal="38" style="font-size: 15.5px; line-height: 1.7; margin: 0 0 16px; color: rgba(22,19,15,0.78);">So there is no punitive language and no reward architecture engineered to keep you opening the app. Past records can be corrected rather than silently rewritten, and your history is preserved rather than trimmed to whatever the current plan allows. It works offline, and syncs when you want it to.</p>
+              <p data-reveal="39" style="font-size: 15.5px; line-height: 1.7; margin: 0 0 22px; color: rgba(22,19,15,0.78);">The core of the app is free and stays useful on its own. Anything bought once is owned — it does not disappear if you later stop paying for anything else. The full receipt gets published with the product's pricing, not ahead of it.</p>
+              <a href="#" data-reveal="40" data-cta-solid style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; padding: 13px 20px; background: #1b3fd0; color: #f4f1ea; display: inline-block;">Visit Consistently</a>
+            </div>
+            <div data-reveal="41" style="border: 1px solid rgba(22,19,15,0.22); padding: 20px;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-bottom: 16px;">Design decisions, stated plainly</div>
+              <div style="display: grid; gap: 0;">
+                <div style="border-top: 1px solid rgba(22,19,15,0.16); padding: 12px 0; display: grid; grid-template-columns: 14px minmax(0,1fr); gap: 12px; align-items: baseline;"><span style="width: 6px; height: 6px; background: #4b7f52; display: block;"></span><span style="font-size: 14.5px; line-height: 1.55;">A missed day is not a failure state.</span></div>
+                <div style="border-top: 1px solid rgba(22,19,15,0.16); padding: 12px 0; display: grid; grid-template-columns: 14px minmax(0,1fr); gap: 12px; align-items: baseline;"><span style="width: 6px; height: 6px; background: #4b7f52; display: block;"></span><span style="font-size: 14.5px; line-height: 1.55;">History is yours, correctable and exportable.</span></div>
+                <div style="border-top: 1px solid rgba(22,19,15,0.16); padding: 12px 0; display: grid; grid-template-columns: 14px minmax(0,1fr); gap: 12px; align-items: baseline;"><span style="width: 6px; height: 6px; background: #4b7f52; display: block;"></span><span style="font-size: 14.5px; line-height: 1.55;">Works offline; the cloud is a convenience, not a lock.</span></div>
+                <div style="border-top: 1px solid rgba(22,19,15,0.16); padding: 12px 0; display: grid; grid-template-columns: 14px minmax(0,1fr); gap: 12px; align-items: baseline;"><span style="width: 6px; height: 6px; background: #4b7f52; display: block;"></span><span style="font-size: 14.5px; line-height: 1.55;">Purchases stay owned after cancellation.</span></div>
+                <div style="border-top: 1px solid rgba(22,19,15,0.16); border-bottom: 1px solid rgba(22,19,15,0.16); padding: 12px 0; display: grid; grid-template-columns: 14px minmax(0,1fr); gap: 12px; align-items: baseline;"><span style="width: 6px; height: 6px; background: #e23b28; display: block;"></span><span style="font-size: 14.5px; line-height: 1.55;">No ads, ever. Nothing about you is sold.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="makers" data-screen-label="For other makers" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
+      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+        <div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">06</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">Other makers</div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: clamp(24px, 4vw, 52px); align-items: start;">
+          <div>
+            <h2 data-reveal="42" style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: clamp(28px, 3.6vw, 44px); line-height: 1.08; letter-spacing: -0.02em; margin: 0 0 18px; max-width: 18ch;">Take the language, if it fits.</h2>
+            <p data-reveal="43" style="font-size: 15.5px; line-height: 1.7; margin: 0 0 14px; color: rgba(22,19,15,0.78);">There is nothing to apply for and nobody to approve you. If the words here describe decisions you already make, use them — and publish your own receipt so people can check.</p>
+            <p data-reveal="44" style="font-size: 15.5px; line-height: 1.7; margin: 0; color: rgba(22,19,15,0.78);">That is the whole ask. A standard nobody polices is worth more than a badge somebody sells.</p>
+          </div>
+          <div data-reveal="45" style="background: #16130f; color: #f4f1ea; padding: clamp(22px, 3vw, 34px);">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(244,241,234,0.5); margin-bottom: 16px;">Three lines to keep</div>
+            <p style="font-family: Newsreader, Georgia, serif; font-size: clamp(19px, 2.1vw, 25px); line-height: 1.36; margin: 0 0 12px;">Treating users like human beings is a competitive advantage.</p>
+            <p style="font-family: Newsreader, Georgia, serif; font-size: clamp(19px, 2.1vw, 25px); line-height: 1.36; margin: 0 0 12px; color: rgba(244,241,234,0.78);">Software can be profitable without becoming extractive.</p>
+            <p style="font-family: Newsreader, Georgia, serif; font-size: clamp(19px, 2.1vw, 25px); line-height: 1.36; margin: 0; color: rgba(244,241,234,0.78);">We make tools, not traps.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="writing" data-screen-label="Writing" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
+      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+        <div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">07</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">Writing</div>
+        </div>
+        <div>
+          <h2 data-reveal="46" style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: clamp(28px, 3.6vw, 44px); line-height: 1.08; letter-spacing: -0.02em; margin: 0 0 14px; max-width: 22ch;">Decisions, written down.</h2>
+          <p data-reveal="47" style="font-size: 15px; line-height: 1.68; margin: 0 0 clamp(22px, 4vh, 38px); max-width: 54ch; color: rgba(22,19,15,0.72);">The argument gets made through specific product decisions rather than ideology. These are the ones queued to be written. None are published yet — listed here so the intent is on the record.</p>
+          <ol style="list-style: none; margin: 0; padding: 0; max-width: 70ch;">
+            <li data-reveal="48" style="display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 14px; align-items: baseline; padding: 15px 0; border-top: 1px solid rgba(22,19,15,0.16);"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: rgba(22,19,15,0.4);">001</span><span style="font-family: Newsreader, Georgia, serif; font-size: 19px; line-height: 1.3;">Why this feature is free</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.38);">Unwritten</span></li>
+            <li data-reveal="49" style="display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 14px; align-items: baseline; padding: 15px 0; border-top: 1px solid rgba(22,19,15,0.16);"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: rgba(22,19,15,0.4);">002</span><span style="font-family: Newsreader, Georgia, serif; font-size: 19px; line-height: 1.3;">What this subscription actually pays for</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.38);">Unwritten</span></li>
+            <li data-reveal="50" style="display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 14px; align-items: baseline; padding: 15px 0; border-top: 1px solid rgba(22,19,15,0.16);"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: rgba(22,19,15,0.4);">003</span><span style="font-family: Newsreader, Georgia, serif; font-size: 19px; line-height: 1.3;">Why purchases stay yours</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.38);">Unwritten</span></li>
+            <li data-reveal="51" style="display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 14px; align-items: baseline; padding: 15px 0; border-top: 1px solid rgba(22,19,15,0.16);"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: rgba(22,19,15,0.4);">004</span><span style="font-family: Newsreader, Georgia, serif; font-size: 19px; line-height: 1.3;">Why Consistently does not punish missed days</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.38);">Unwritten</span></li>
+            <li data-reveal="52" style="display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 14px; align-items: baseline; padding: 15px 0; border-top: 1px solid rgba(22,19,15,0.16); border-bottom: 1px solid rgba(22,19,15,0.16);"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: rgba(22,19,15,0.4);">005</span><span style="font-family: Newsreader, Georgia, serif; font-size: 19px; line-height: 1.3;">When more people support a tool, why should they all pay less?</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.38);">Unwritten</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section data-screen-label="Closing" style="padding: clamp(64px, 14vh, 150px) 0 clamp(48px, 9vh, 96px); border-top: 1px solid rgba(22,19,15,0.16);">
+      <p data-reveal="53" style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: clamp(40px, 9vw, 118px); line-height: 0.98; letter-spacing: -0.03em; margin: 0; max-width: 14ch;">Build something worth keeping.</p>
+      <div data-rule="2" style="height: 3px; background: #e23b28; width: clamp(120px, 22vw, 260px); margin: clamp(28px, 5vh, 52px) 0 0; transform-origin: left center;"></div>
+    </section>
+  </main>
+
+  <footer style="border-top: 1px solid rgba(22,19,15,0.16); margin-top: clamp(24px, 5vh, 48px);">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 26px clamp(20px, 5vw, 64px) 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px 40px; align-items: start; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; line-height: 1.8; color: rgba(22,19,15,0.6);">
+      <div>
+        <div style="letter-spacing: 0.24em; text-transform: uppercase; color: #16130f; margin-bottom: 8px;">Sincereware</div>
+        <div>sincereware.net — version 0.1, a product standard by Michael Piras. Currently practised in Consistently.</div>
+      </div>
+      <div>
+        <div style="letter-spacing: 0.24em; text-transform: uppercase; color: #16130f; margin-bottom: 8px;">Practice</div>
+        <div><a href="https://hevin.design">Hevin Design</a> is the studio applying these ideas to client work — fixed scope and price, no lock-in, you own what you paid for.</div>
+      </div>
+      <div>
+        <div style="letter-spacing: 0.24em; text-transform: uppercase; color: #16130f; margin-bottom: 8px;">Honesty note</div>
+        <div>Every figure on this page is either checkable in a shipped product or labelled illustrative. There are no member counts here because there is no membership.</div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // Copy-to-clipboard for the receipt template card.
+  var copyBtn = document.getElementById('sw-copy-receipt');
+  if (copyBtn) {
+    var receiptText = [
+      'Sincereware Receipt',
+      'Free: ',
+      'Paid: ',
+      'Data: ',
+      'Never sold: ',
+      'Leaving: ',
+      'Growth: '
+    ].join('\n');
+    var resetTimer;
+    copyBtn.addEventListener('click', function () {
+      var done = function () {
+        copyBtn.textContent = 'Copied';
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(function () { copyBtn.textContent = 'Copy template'; }, 1800);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(receiptText).then(done, done);
+      } else {
+        done();
+      }
+    });
+  }
+
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+
+  function revealAll() {
+    document.querySelectorAll('[data-reveal]').forEach(function (el) {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+    document.querySelectorAll('[data-rule]').forEach(function (el) { el.style.transform = 'scaleX(1)'; });
+    var c = document.getElementById('sw-curve');
+    if (c) c.style.strokeDashoffset = '0';
+    (curveDots || []).forEach(function (d) { d.style.opacity = '1'; });
+  }
+  window.addEventListener('beforeprint', revealAll);
+
+  var curveDots = [];
+
+  function installReveals() {
+    var vh = window.innerHeight || 800;
+    var targets = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]')).filter(function (el) {
+      // never hide what is already on screen — the page must paint instantly
+      return el.getBoundingClientRect().top > vh * 0.9;
+    });
+    targets.forEach(function (el) {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(14px)';
+      el.style.transition = 'opacity 620ms cubic-bezier(.2,.6,.2,1), transform 620ms cubic-bezier(.2,.6,.2,1)';
+    });
+    var rules = Array.prototype.slice.call(document.querySelectorAll('[data-rule]')).filter(function (el) {
+      return el.getBoundingClientRect().top > vh * 0.9;
+    });
+    rules.forEach(function (el) {
+      el.style.transform = 'scaleX(0)';
+      el.style.transition = 'transform 900ms cubic-bezier(.22,.7,.15,1)';
+    });
+
+    var curve = document.getElementById('sw-curve');
+    if (curve && curve.getTotalLength) {
+      var len = curve.getTotalLength();
+      curve.style.strokeDasharray = len + ' ' + len;
+      curve.style.strokeDashoffset = String(len);
+      curve.style.transition = 'stroke-dashoffset 1600ms cubic-bezier(.25,.8,.3,1)';
+      var dots = curve.parentNode ? Array.prototype.slice.call(curve.parentNode.querySelectorAll('circle, text')) : [];
+      dots.forEach(function (d) { d.style.opacity = '0'; d.style.transition = 'opacity 500ms ease 900ms'; });
+      curveDots = dots;
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        if (el.hasAttribute('data-reveal')) {
+          var n = parseInt(el.getAttribute('data-reveal'), 10) || 0;
+          el.style.transitionDelay = ((n % 4) * 70) + 'ms';
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        } else if (el.hasAttribute('data-rule')) {
+          el.style.transform = 'scaleX(1)';
+        } else if (el.id === 'sw-curve') {
+          el.style.strokeDashoffset = '0';
+          (curveDots || []).forEach(function (d) { d.style.opacity = '1'; });
+        }
+        io.unobserve(el);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+
+    targets.concat(rules).forEach(function (el) { io.observe(el); });
+    if (curve) io.observe(curve);
+
+    setTimeout(function () {
+      targets.forEach(function (el) {
+        if (el.style.opacity === '0' && el.getBoundingClientRect().top < vh) {
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        }
+      });
+    }, 1200);
+  }
+
+  var installed = false;
+  function install() {
+    if (installed) return;
+    if (document.visibilityState !== 'visible') return;
+    installed = true;
+    installReveals();
+  }
+  document.addEventListener('visibilitychange', install);
+  install();
+})();
+</script>
+</body>
+</html>
