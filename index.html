@@ -754,17 +754,36 @@
   // The document-y the mark should currently sit at: viewport-center,
   // clamped to the path's own y-range (before the path starts / after it
   // ends, the mark rests at that end instead of chasing an empty target).
+  // Viewport-centered in the broad middle of the scroll, but blends to the
+  // path's EXACT start (perched on the "w") at scrollY=0 and its EXACT end
+  // (beneath the closing line) at max scroll — viewport-height/2 alone would
+  // almost never coincide with those anchors (they sit far closer to the
+  // page's top/bottom than half a typical viewport), so without this blend
+  // the staged start/end moments never actually appear.
   function target() {
     var vh = window.innerHeight || 800;
-    var sy0 = window.scrollY || document.documentElement.scrollTop || 0;
-    return Math.max(start, Math.min(end, sy0 + vh / 2));
+    var doc = document.documentElement;
+    var maxScroll = Math.max(1, doc.scrollHeight - vh);
+    var sy0 = window.scrollY || doc.scrollTop || 0;
+    var natural = sy0 + vh / 2;
+    var edge = Math.min(vh, maxScroll / 2);
+    if (edge > 0 && sy0 <= edge) {
+      var k1 = sy0 / edge;
+      return start + (natural - start) * k1;
+    }
+    if (edge > 0 && sy0 >= maxScroll - edge) {
+      var k2 = (maxScroll - sy0) / edge;
+      return end + (natural - end) * k2;
+    }
+    return Math.max(start, Math.min(end, natural));
   }
 
   // Find where the sampled path crosses a given document-y, scanning
   // forward from the start. Samples are y-monotonic for nearly the whole
-  // path; only the very last loop (the arrival flourish) briefly isn't, and
-  // taking the first crossing there is an acceptable approximation for a
-  // window that only lasts the final few percent of scroll.
+  // path; only the very last loop (the arrival flourish) briefly isn't, so
+  // its y can exceed `end` before coming back down to it — paint() bypasses
+  // this search entirely for the true start/end so that non-monotonic tail
+  // can never cause it to land early.
   function findAtY(ty) {
     var s = samples;
     if (!s.length) return null;
@@ -781,7 +800,15 @@
 
   function paint(docY) {
     if (!path.getAttribute('d') || !samples.length) return;
-    var hit = findAtY(docY);
+    var hit;
+    if (docY <= start + 0.01) {
+      hit = { x: samples[0].x, y: samples[0].y, i0: 0 };
+    } else if (docY >= end - 0.01) {
+      var lastI = samples.length - 1;
+      hit = { x: samples[lastI].x, y: samples[lastI].y, i0: lastI };
+    } else {
+      hit = findAtY(docY);
+    }
     if (trail) {
       var td = 'M' + samples[0].x + ',' + samples[0].y;
       for (var i4 = 1; i4 <= hit.i0; i4++) td += ' L' + samples[i4].x + ',' + samples[i4].y;
