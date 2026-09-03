@@ -31,6 +31,7 @@
   @keyframes swFlutter { 0%, 100% { transform: translate3d(0,0,0) rotate(var(--r, 0deg)) scaleX(1); } 40% { transform: translate3d(14px,-18px,0) rotate(calc(var(--r, 0deg) + 7deg)) scaleX(0.86); } 70% { transform: translate3d(4px,-6px,0) rotate(calc(var(--r, 0deg) - 3deg)) scaleX(1); } }
   @media (prefers-reduced-motion: reduce) {
     [data-garden] * { animation: none !important; }
+    [data-thread] * { animation: none !important; }
   }
   @media print {
     [data-reveal] { opacity: 1 !important; transform: none !important; }
@@ -39,9 +40,17 @@
 </style>
 </head>
 <body>
-<div style="position: relative; min-height: 100vh; background: #f4f1ea; color: #16130f; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; overflow-x: hidden;">
+<div data-root="1" style="position: relative; min-height: 100vh; background: #f4f1ea; color: #16130f; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; overflow-x: clip;">
 
   <div aria-hidden="true" style="position: fixed; inset: 0; pointer-events: none; z-index: 60; opacity: 0.05; mix-blend-mode: multiply; background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E&quot;);"></div>
+
+  <div data-thread="wrap" aria-hidden="true" style="position: absolute; inset: 0; z-index: 30; pointer-events: none; overflow: hidden;">
+    <svg data-thread="svg" width="100%" height="100%" preserveAspectRatio="none" style="display: block; overflow: visible;">
+      <path data-thread="path" fill="none" stroke="none"></path>
+      <path data-thread="trail" fill="none" stroke="#16130f" stroke-opacity="0.55" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="1.5 7"></path>
+    </svg>
+    <img data-thread="mark" src="assets/butterfly-a.gif" alt="" style="position: absolute; left: 0; top: 0; width: clamp(32px, 9vw, 46px); height: clamp(32px, 9vw, 46px); margin: calc(clamp(32px, 9vw, 46px) / -2) 0 0 calc(clamp(32px, 9vw, 46px) / -2); will-change: transform; filter: drop-shadow(0 4px 10px rgba(22,19,15,0.22));" />
+  </div>
 
   <header style="position: sticky; top: 0; z-index: 40; background: rgba(244,241,234,0.92); backdrop-filter: blur(6px); border-bottom: 1px solid rgba(22,19,15,0.14);">
     <div style="max-width: 1180px; margin: 0 auto; padding: 14px clamp(20px, 5vw, 64px); display: flex; align-items: baseline; justify-content: space-between; gap: 24px;">
@@ -506,6 +515,332 @@
   }
   document.addEventListener('visibilitychange', install);
   install();
+})();
+</script>
+<script>
+(function () {
+  'use strict';
+
+  // Scroll-driven butterfly flight thread. See design_handoff_butterfly_flight
+  // for the full spec this is ported from (a proprietary-format prototype +
+  // logic-class.js reference). Ported to plain JS/DOM; the geometry, easing
+  // and timing constants below are reproduced exactly as specified there.
+
+  var wrap = document.querySelector('[data-thread="wrap"]');
+  if (!wrap) return;
+  var svg = wrap.querySelector('[data-thread="svg"]');
+  var path = wrap.querySelector('[data-thread="path"]');
+  var trail = wrap.querySelector('[data-thread="trail"]');
+  var mark = wrap.querySelector('[data-thread="mark"]');
+
+  // The designer's own drawn flight path — column-relative fractions
+  // [x, y], not viewport fractions. Ship as data; do not regenerate.
+  var BAKED = [[1.0818,0.0023],[0.8768,0.0131],[0.3885,0.0244],[0.2479,0.0273],[0.1802,0.0296],[0.0902,0.0354],[0.0292,0.0403],[-0.0232,0.0496],[-0.059,0.0609],[-0.0963,0.0769],[-0.12,0.09],[-0.1334,0.1065],[-0.1318,0.121],[-0.0759,0.1352],[0.002,0.1419],[0.0988,0.1465],[0.1953,0.15],[0.3444,0.1544],[0.4546,0.157],[0.5766,0.1608],[0.7107,0.1642],[0.7918,0.1669],[0.8835,0.1709],[0.9614,0.1756],[1.0461,0.1843],[1.0971,0.193],[1.131,0.2063],[1.1479,0.22],[1.153,0.229],[1.1428,0.2409],[1.0649,0.2545],[0.9802,0.2591],[0.8937,0.2623],[0.8174,0.2649],[0.7107,0.2673],[0.5887,0.2687],[0.5005,0.2702],[0.3853,0.2734],[0.3022,0.2763],[0.2039,0.28],[0.1292,0.2832],[0.0429,0.2893],[-0.0216,0.2963],[-0.0912,0.3073],[-0.12,0.3178],[-0.1404,0.3317],[-0.1318,0.3445],[-0.0692,0.3566],[0.0106,0.3613],[0.1004,0.3645],[0.1834,0.3656],[0.2681,0.3656],[0.375,0.3659],[0.4648,0.3659],[0.5903,0.3671],[0.7005,0.3677],[0.8174,0.3709],[0.8547,0.3729],[0.9563,0.3784],[1.024,0.3851],[1.0971,0.3967],[1.1377,0.4098],[1.1648,0.4246],[1.1853,0.4382],[1.1834,0.4571],[1.1648,0.4704],[1.1243,0.4837],[1.0444,0.4939],[0.97,0.4988],[0.8563,0.5032],[0.7666,0.5046],[0.6564,0.5046],[0.6037,0.4985],[0.636,0.4875],[0.7037,0.4811],[0.7918,0.4811],[0.8547,0.4896],[0.8241,0.5032],[0.7292,0.5073],[0.636,0.509],[0.5395,0.5093],[0.4377,0.5093],[0.3514,0.5104],[0.2412,0.5128],[0.1378,0.5165],[0.063,0.5212],[-0.0181,0.5287],[-0.0912,0.538],[-0.1369,0.5496],[-0.1554,0.5638],[-0.164,0.5769],[-0.1216,0.5879],[-0.0504,0.5949],[0.0327,0.5987],[0.1173,0.6004],[0.1953,0.6021],[0.3191,0.6027],[0.4258,0.6027],[0.5785,0.6039],[0.6954,0.605],[0.8563,0.6074],[1.0461,0.6123],[1.1444,0.6196],[1.2038,0.6274],[1.2597,0.6407],[1.2683,0.6576],[1.2565,0.6715],[1.2124,0.6851],[1.1208,0.693],[1.0224,0.6979],[0.9429,0.7011],[0.8429,0.704],[0.7292,0.706],[0.5986,0.7086],[0.4003,0.7107],[0.2106,0.7142],[0.0528,0.7211],[-0.0232,0.7258],[-0.0861,0.7345],[-0.1114,0.7455],[-0.0979,0.7606],[-0.0555,0.7713],[0.0292,0.778],[0.1141,0.7803],[0.2055,0.7809],[0.2869,0.7812],[0.392,0.7824],[0.4801,0.7832],[0.6107,0.7844],[0.7666,0.7858],[0.9141,0.7908],[1.0361,0.7963],[1.1326,0.8044],[1.1783,0.8189],[1.1683,0.834],[1.1192,0.8462],[1.0581,0.8546],[0.9665,0.8636],[0.8512,0.8703],[0.6768,0.8767],[0.5156,0.8831],[0.392,0.8903],[0.3122,0.8973],[0.1869,0.9083],[0.0886,0.9173],[0.0039,0.9266],[-0.0928,0.9359],[-0.2132,0.9457],[-0.2691,0.9541],[-0.3301,0.9689]];
+
+  var len = 0, shown = null, samples = [], start = 0, end = 1;
+  var raf = null, flying = false, slowT = null;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Catmull-Rom -> cubic bezier, tension 0.42. No corners, no right angles.
+  function smooth(pts) {
+    if (!pts || pts.length < 2) return '';
+    var p = pts.slice();
+    if (p.length === 2) return 'M' + p[0].x + ',' + p[0].y + ' L' + p[1].x + ',' + p[1].y;
+    var d = 'M' + p[0].x.toFixed(1) + ',' + p[0].y.toFixed(1);
+    for (var i = 0; i < p.length - 1; i++) {
+      var p0 = p[i - 1] || p[i], p1 = p[i], p2 = p[i + 1], p3 = p[i + 2] || p2;
+      var t = 0.42;
+      d += ' C' + (p1.x + (p2.x - p0.x) * t / 2).toFixed(1) + ',' + (p1.y + (p2.y - p0.y) * t / 2).toFixed(1) +
+           ' ' + (p2.x - (p3.x - p1.x) * t / 2).toFixed(1) + ',' + (p2.y - (p3.y - p1.y) * t / 2).toFixed(1) +
+           ' ' + p2.x.toFixed(1) + ',' + p2.y.toFixed(1);
+    }
+    return d;
+  }
+
+  // Iron out hand jitter before smoothing: drop near-duplicates, then average.
+  function relax(pts, passes) {
+    var p = pts.map(function (q) { return { x: q.x, y: q.y }; });
+    var thinned = [p[0]];
+    for (var i = 1; i < p.length; i++) {
+      var l = thinned[thinned.length - 1];
+      if (Math.hypot(p[i].x - l.x, p[i].y - l.y) > 6) thinned.push(p[i]);
+    }
+    p = thinned;
+    for (var k = 0; k < (passes || 3); k++) {
+      var out = [p[0]];
+      for (var i2 = 1; i2 < p.length - 1; i2++) {
+        out.push({
+          x: p[i2 - 1].x * 0.25 + p[i2].x * 0.5 + p[i2 + 1].x * 0.25,
+          y: p[i2 - 1].y * 0.25 + p[i2].y * 0.5 + p[i2 + 1].y * 0.25
+        });
+      }
+      out.push(p[p.length - 1]);
+      p = out;
+    }
+    return p;
+  }
+
+  // The text column, not the window, is the stable frame of reference.
+  function colBox() {
+    var main = document.querySelector('main');
+    var b = wrap.getBoundingClientRect();
+    var k = (b.width && wrap.offsetWidth) ? b.width / wrap.offsetWidth : 1;
+    if (!main) return { l: 0, w: wrap.offsetWidth || 1 };
+    var r = main.getBoundingClientRect();
+    return { l: (r.left - b.left) / k, w: (r.width / k) || 1 };
+  }
+
+  // [column fraction, page fraction] -> page px, fitted so nothing clips.
+  function toPx(pts, w, h) {
+    var c = colBox();
+    var xs = pts.map(function (p) { return c.l + p[0] * c.w; });
+    var lo = Math.min.apply(null, xs), hi = Math.max.apply(null, xs);
+    var pad = 14, avail = Math.max(40, w - pad * 2);
+    var span = hi - lo;
+    var k = span > avail ? avail / span : 1;
+    var off = span > avail ? pad - lo * k : Math.max(pad - lo, Math.min(0, (w - pad) - hi));
+    return pts.map(function (p, i) { return { x: xs[i] * k + off, y: p[1] * h }; });
+  }
+
+  // Land the flight on a specific glyph by locating it with a Range.
+  function wordTarget(word, charOffset, scope) {
+    var els = Array.prototype.slice.call(document.querySelectorAll(scope || 'main h1, main p'));
+    for (var e = 0; e < els.length; e++) {
+      var el = els[e];
+      for (var n = 0; n < el.childNodes.length; n++) {
+        var node = el.childNodes[n];
+        if (node.nodeType !== 3) continue;
+        var i = node.textContent.indexOf(word);
+        if (i < 0) continue;
+        var range = document.createRange();
+        range.setStart(node, i + (charOffset || 0));
+        range.setEnd(node, i + (charOffset || 0) + 1);
+        var rects = range.getClientRects();
+        if (!rects.length) continue;
+        var r = rects[0];
+        var b = wrap.getBoundingClientRect();
+        var k = (b.width && wrap.offsetWidth) ? b.width / wrap.offsetWidth : 1;
+        var l = (r.left - b.left) / k, t = (r.top - b.top) / k;
+        var gw = r.width / k, gh = r.height / k;
+        return { x: l + gw / 2, y: t + gh * 0.82, l: l, t: t, w: gw, h: gh, b: t + gh };
+      }
+    }
+    return null;
+  }
+
+  function build() {
+    var w = wrap.offsetWidth || wrap.clientWidth || window.innerWidth;
+    var h = wrap.scrollHeight || document.body.scrollHeight;
+    if (!w || !h) return;
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    var phone = w < 520;
+    wrap.style.zIndex = phone ? '0' : '30';
+    var d;
+    if (phone) {
+      // Narrow measure: a generated serpentine, edge to edge, running
+      // behind the copy — the drawn curve compresses to scribble here.
+      var L = 36, R = Math.max(L + 60, w - 36);
+      var mid = (L + R) / 2, amp = (R - L) / 2;
+      var period = Math.max(620, Math.min(900, h / 10));
+      var pts = [];
+      var zEl = document.querySelector('[data-screen-label="Closing"] p');
+      var endY = h - 40, endX = mid;
+      if (zEl) {
+        var b2 = wrap.getBoundingClientRect(), r2 = zEl.getBoundingClientRect();
+        var k2 = (b2.width && wrap.offsetWidth) ? b2.width / wrap.offsetWidth : 1;
+        endY = (r2.bottom - b2.top) / k2 + 34;
+        endX = Math.max(L, Math.min(R, (r2.left - b2.left) / k2 + 30));
+      }
+      for (var y = 0; y <= endY - 200; y += 24) {
+        pts.push({ x: mid + amp * Math.sin((y / period) * Math.PI * 2), y: y });
+      }
+      var lastX = pts.length ? pts[pts.length - 1].x : mid;
+      pts.push({ x: lastX + (endX - lastX) * 0.5, y: endY - 120 });
+      pts.push({ x: endX + (endX < mid ? 46 : -46), y: endY - 44 });
+      pts.push({ x: endX, y: endY });
+      d = smooth(pts.map(function (p) { return { x: Math.max(L, Math.min(R, p.x)), y: p.y }; }));
+    } else {
+      var px = relax(toPx(BAKED, w, h), 4);
+      var a = wordTarget('Software', 4); // the "w"
+      var zt = wordTarget('keeping.', 7, '[data-screen-label="Closing"] p');
+      var z = zt ? { x: zt.x, y: zt.b + 30, l: zt.l, t: zt.t, w: zt.w, h: zt.h, b: zt.b } : null;
+      if (a) {
+        var gh = a.h || 90, gw = a.w || 44;
+        var s0 = wordTarget('Software', 0);
+        var top = a.t + gh * 0.40; // the letter's own ink, not the line box
+        var sw = s0 ? s0.w : gw, sh = s0 ? s0.h : gh;
+        var sl = s0 ? s0.l : a.l - gw * 5, st = s0 ? s0.t : a.t;
+        var entry = [
+          { x: a.l + gw * 0.42, y: top },
+          { x: a.l - gw * 0.9, y: top - sh * 0.06 },
+          { x: sl + sw * 1.25, y: st + sh * 0.30 },
+          { x: sl + sw * 0.55, y: st + sh * 0.26 },
+          { x: sl - sw * 0.18, y: st + sh * 0.42 },
+          { x: sl - sw * 0.34, y: st + sh * 0.72 },
+          { x: sl - sw * 0.08, y: st + sh * 0.98 }
+        ].map(function (p) { return { x: Math.max(30, p.x), y: Math.max(6, p.y) }; });
+        var exit = entry[entry.length - 1];
+        var heroFloor = (s0 ? s0.b : a.b) + gh * 1.1;
+        var rest = px.filter(function (p) { return p.y > heroFloor; });
+        if (rest.length < 4) rest = relax(toPx(BAKED, w, h), 4).filter(function (p) { return p.y > heroFloor; });
+        var join = rest[0];
+        if (join) {
+          var span = join.y - exit.y, dx = join.x - exit.x;
+          px = entry.concat([
+            { x: exit.x + dx * 0.25, y: exit.y + span * 0.34 },
+            { x: exit.x + dx * 0.62, y: exit.y + span * 0.68 }
+          ], rest);
+        } else {
+          px = entry.concat(rest);
+        }
+        px = px.map(function (p) { return { x: p.x, y: Math.max(6, p.y) }; });
+        // subdivide long gaps so one Catmull-Rom span cannot overshoot
+        var dense = [px[0]];
+        for (var i3 = 1; i3 < px.length; i3++) {
+          var a0 = px[i3 - 1], b0 = px[i3];
+          var gap = Math.hypot(b0.x - a0.x, b0.y - a0.y);
+          if (gap > 320) {
+            var nseg = Math.ceil(gap / 320);
+            for (var j = 1; j < nseg; j++) {
+              dense.push({ x: a0.x + (b0.x - a0.x) * (j / nseg), y: a0.y + (b0.y - a0.y) * (j / nseg) });
+            }
+          }
+          dense.push(b0);
+        }
+        px = dense;
+      }
+      if (z) {
+        // arrive with momentum: overshoot, curl back, come in level so the
+        // butterfly settles upright beneath the closing line
+        px = px.filter(function (p) { return p.y < z.y - 150; }).map(function (p) { return { x: p.x, y: Math.min(p.y, z.y - 150) }; });
+        var last = px[px.length - 1] || z;
+        var w2 = Math.max(90, Math.abs(z.x - last.x) * 0.6 + 90);
+        px = px.concat([
+          { x: last.x + (z.x - last.x) * 0.35, y: z.y - 120 },
+          { x: z.x + w2 * 0.55, y: z.y - 86 },
+          { x: z.x + w2 * 0.72, y: z.y - 22 },
+          { x: z.x + w2 * 0.42, y: z.y + 34 },
+          { x: z.x - w2 * 0.12, y: z.y + 40 },
+          { x: z.x - w2 * 0.3, y: z.y - 2 },
+          { x: z.x - w2 * 0.06, y: z.y - 30 },
+          { x: z.x - 34, y: z.y - 6 },
+          { x: z.x - 12, y: z.y - 1 },
+          { x: z.x, y: z.y }
+        ]);
+        var floor = Math.min(h - 10, z.y + 46);
+        px = px.map(function (p) { return { x: p.x, y: Math.min(p.y, floor) }; });
+      }
+      d = smooth(px);
+    }
+    path.setAttribute('d', d);
+    len = path.getTotalLength ? path.getTotalLength() : 0;
+    var nSamples = Math.max(24, Math.min(420, Math.round(len / 26)));
+    samples = [];
+    for (var si = 0; si <= nSamples; si++) {
+      var pt = path.getPointAtLength(len * (si / nSamples));
+      samples.push({ x: +pt.x.toFixed(1), y: +pt.y.toFixed(1) });
+    }
+    start = 0; end = 1;
+    shown = target();
+    paint(shown);
+    if (raf) { cancelAnimationFrame(raf); raf = null; }
+    scheduleDraw();
+  }
+
+  function target() {
+    var doc = document.documentElement;
+    var max = Math.max(1, doc.scrollHeight - window.innerHeight);
+    var p = Math.min(1, Math.max(0, (window.scrollY || doc.scrollTop || 0) / max));
+    return start + (end - start) * p;
+  }
+
+  function paint(v) {
+    if (!path.getAttribute('d')) return;
+    if (trail && samples.length) {
+      var n = Math.max(1, Math.round(v * (samples.length - 1)));
+      var td = 'M' + samples[0].x + ',' + samples[0].y;
+      for (var i4 = 1; i4 <= n; i4++) td += ' L' + samples[i4].x + ',' + samples[i4].y;
+      trail.setAttribute('d', td);
+    }
+    if (!mark || !path.getPointAtLength) return;
+    var lw = wrap.offsetWidth || wrap.clientWidth || 1;
+    var lh = wrap.scrollHeight || wrap.offsetHeight || 1;
+    var sx = lw / (svg.viewBox.baseVal.width || lw);
+    var sy = lh / (svg.viewBox.baseVal.height || lh);
+    var at = len * v;
+    var pt = path.getPointAtLength(at);
+    var pv = path.getPointAtLength(Math.max(0, at - 14));
+    var ang = Math.atan2((pt.y - pv.y) * sy, (pt.x - pv.x) * sx) * 180 / Math.PI;
+    // asset points right; never rotate past vertical — mirror instead
+    var r = ((ang % 360) + 540) % 360 - 180;
+    var flip = '';
+    if (r > 90 || r < -90) { r = ((r + 180) % 360 + 540) % 360 - 180; flip = ' scaleX(-1)'; }
+    mark.style.transform = 'translate(' + (pt.x * sx).toFixed(1) + 'px,' + (pt.y * sy).toFixed(1) + 'px) rotate(' + r.toFixed(1) + 'deg)' + flip;
+  }
+
+  function syncButterfly() {
+    var want = flying ? 'assets/butterfly-fast.gif' : 'assets/butterfly-a.gif';
+    if (mark.getAttribute('src') !== want) mark.setAttribute('src', want);
+  }
+
+  // Ease the drawn position toward the scroll-derived target at 9% of the
+  // remaining distance per frame — this is the whole "fluid, not
+  // scroll-linked" feel of the piece.
+  function tick() {
+    raf = null; // clear the handle FIRST: an early return must not strand it
+    if (!len) return;
+    var t = target();
+    if (!isFinite(t)) t = start;
+    if (shown !== null && !isFinite(shown)) shown = t;
+    if (reduce) { shown = t; paint(t); raf = null; return; }
+    if (shown === null) shown = t;
+    try {
+      if (Math.abs(t - shown) < 0.0015) {
+        if (shown !== t) { shown = t; paint(shown); }
+        return; // settled: idle until the next scroll or watchdog beat
+      }
+      shown += (t - shown) * 0.09;
+      paint(shown);
+      if (!flying) { flying = true; syncButterfly(); }
+      clearTimeout(slowT);
+      slowT = setTimeout(function () { flying = false; syncButterfly(); }, 260);
+    } catch (e) { /* a throw must not strand the loop */ }
+    raf = requestAnimationFrame(tick);
+  }
+  function scheduleDraw() {
+    if (raf) cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(tick);
+  }
+
+  var rt;
+  function onResize() { clearTimeout(rt); rt = setTimeout(build, 140); }
+
+  window.addEventListener('scroll', scheduleDraw, { passive: true });
+  document.addEventListener('scroll', scheduleDraw, { passive: true, capture: true });
+  window.addEventListener('wheel', scheduleDraw, { passive: true });
+  window.addEventListener('touchmove', scheduleDraw, { passive: true });
+  window.addEventListener('resize', onResize);
+  window.addEventListener('beforeprint', function () {
+    if (path.getAttribute('d')) { shown = end; paint(shown); }
+  });
+
+  // Scroll events are not guaranteed to reach every host; a cheap watchdog
+  // re-arms the idle loop whenever the target has moved.
+  setInterval(function () {
+    if (!len) return;
+    if (shown === null || Math.abs(target() - shown) > 0.0015) {
+      raf = requestAnimationFrame(tick);
+    }
+  }, 180);
+
+  if (window.ResizeObserver) {
+    new ResizeObserver(onResize).observe(document.body);
+  }
+
+  syncButterfly();
+  build(); // the thread must exist for reduced-motion visitors too
+  setTimeout(build, 700);  // web fonts reflow the headline after mount
+  setTimeout(build, 2200);
 })();
 </script>
 </body>
