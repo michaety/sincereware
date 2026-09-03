@@ -659,7 +659,11 @@
         endY = (r2.bottom - b2.top) / k2 + 34;
         endX = Math.max(L, Math.min(R, (r2.left - b2.left) / k2 + 30));
       }
-      for (var y = 0; y <= endY - 200; y += 24) {
+      // Start below the sticky header: at y=0 the mark would render exactly
+      // behind it (the header sits at z-index 40, above the thread's z-index
+      // 0 on narrow screens), making it invisible the moment the page loads.
+      var startY = 110;
+      for (var y = startY; y <= endY - 200; y += 24) {
         pts.push({ x: mid + amp * Math.sin((y / period) * Math.PI * 2), y: y });
       }
       var lastX = pts.length ? pts[pts.length - 1].x : mid;
