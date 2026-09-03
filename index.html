@@ -37,6 +37,14 @@
     [data-reveal] { opacity: 1 !important; transform: none !important; }
     [data-rule] { transform: scaleX(1) !important; }
   }
+  @media (max-width: 640px) {
+    /* The numbered-sidebar layout (140px label column + content) is too
+       cramped once the viewport itself is under ~390px wide — stack the
+       label above the content instead, and drop the sticky positioning
+       that only makes sense with a tall side-by-side column next to it. */
+    .sw-2col { grid-template-columns: 1fr !important; gap: 10px !important; }
+    .sw-sticky-num { position: static !important; }
+  }
 </style>
 </head>
 <body>
@@ -115,8 +123,8 @@
     </section>
 
     <section id="standard" data-screen-label="The standard" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
-      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
-        <div style="position: sticky; top: 84px;">
+      <div class="sw-2col" style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+        <div class="sw-sticky-num" style="position: sticky; top: 84px;">
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">01</div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">The standard</div>
         </div>
@@ -169,7 +177,7 @@
     </section>
 
     <section id="isnot" data-screen-label="What it is not" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
-      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+      <div class="sw-2col" style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
         <div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">02</div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">Boundaries</div>
@@ -203,7 +211,7 @@
     </section>
 
     <section id="rate" data-screen-label="Community Rate" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
-      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+      <div class="sw-2col" style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
         <div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">03</div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">Pricing model</div>
@@ -261,7 +269,7 @@
     </section>
 
     <section id="receipt" data-screen-label="The receipt" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
-      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+      <div class="sw-2col" style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
         <div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">04</div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">The device</div>
@@ -299,7 +307,7 @@
     </section>
 
     <section id="practice" data-screen-label="In practice" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
-      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+      <div class="sw-2col" style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
         <div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">05</div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">One case</div>
@@ -330,7 +338,7 @@
     </section>
 
     <section id="makers" data-screen-label="For other makers" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
-      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+      <div class="sw-2col" style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
         <div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">06</div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">Other makers</div>
@@ -352,7 +360,7 @@
     </section>
 
     <section id="writing" data-screen-label="Writing" style="padding: clamp(48px, 9vh, 104px) 0; border-top: 1px solid rgba(22,19,15,0.16);">
-      <div style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
+      <div class="sw-2col" style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
         <div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e23b28;">07</div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.5); margin-top: 6px;">Writing</div>
