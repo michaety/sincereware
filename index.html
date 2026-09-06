@@ -55,7 +55,6 @@
   <div data-thread="wrap" aria-hidden="true" style="position: absolute; inset: 0; z-index: 30; pointer-events: none; overflow: hidden;">
     <svg data-thread="svg" width="100%" height="100%" preserveAspectRatio="none" style="display: block; overflow: visible;">
       <path data-thread="path" fill="none" stroke="none"></path>
-      <path data-thread="trail" fill="none" stroke="#16130f" stroke-opacity="0.55" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="1.5 7"></path>
     </svg>
     <img data-thread="mark" src="assets/butterfly-a.gif" alt="" style="position: fixed; left: 0; top: 0; width: clamp(32px, 9vw, 46px); height: clamp(32px, 9vw, 46px); margin: calc(clamp(32px, 9vw, 46px) / -2) 0 0 calc(clamp(32px, 9vw, 46px) / -2); will-change: transform; filter: drop-shadow(0 4px 10px rgba(22,19,15,0.22));" />
   </div>
@@ -538,7 +537,6 @@
   if (!wrap) return;
   var svg = wrap.querySelector('[data-thread="svg"]');
   var path = wrap.querySelector('[data-thread="path"]');
-  var trail = wrap.querySelector('[data-thread="trail"]');
   var mark = wrap.querySelector('[data-thread="mark"]');
 
   // The designer's own drawn flight path — column-relative fractions
@@ -663,8 +661,15 @@
       // behind it (the header sits at z-index 40, above the thread's z-index
       // 0 on narrow screens), making it invisible the moment the page loads.
       var startY = 110;
+      // A pure sine reads as a metronome swinging left-right on a fixed
+      // beat — a second, faster wave at a non-integer ratio of the first
+      // (and out of phase with it) keeps the curve bounded within `amp`
+      // while breaking up that regular rhythm into something more like a
+      // wandering flutter.
+      var period2 = period * 0.37;
       for (var y = startY; y <= endY - 200; y += 24) {
-        pts.push({ x: mid + amp * Math.sin((y / period) * Math.PI * 2), y: y });
+        var s = Math.sin((y / period) * Math.PI * 2) * 0.72 + Math.sin((y / period2) * Math.PI * 2 + 1.3) * 0.28;
+        pts.push({ x: mid + amp * s, y: y });
       }
       var lastX = pts.length ? pts[pts.length - 1].x : mid;
       pts.push({ x: lastX + (endX - lastX) * 0.5, y: endY - 120 });
@@ -810,7 +815,20 @@
     return { x: s[s.length - 1].x, y: s[s.length - 1].y, i0: s.length - 1 };
   }
 
-  function paint(docY) {
+  // Small continuous wander, independent of scroll — a handful of
+  // incommensurate sines rather than one clean cycle, so it never
+  // resolves into a repeating loop a viewer can predict. Kept subtle
+  // (a few px, a few degrees) so it reads as a live wing/body adjusting
+  // rather than a wobble bolted onto the flight.
+  function jitter(t) {
+    return {
+      x: Math.sin(t * 0.9) * 2.2 + Math.sin(t * 2.3 + 1.7) * 1.1 + Math.sin(t * 5.1 + 0.3) * 0.5,
+      y: Math.sin(t * 1.3 + 0.5) * 2.0 + Math.sin(t * 3.1 + 2.1) * 0.9 + Math.sin(t * 6.7 + 1.1) * 0.4,
+      r: Math.sin(t * 1.7 + 0.9) * 6 + Math.sin(t * 4.3 + 2.5) * 3
+    };
+  }
+
+  function paint(docY, t) {
     if (!path.getAttribute('d') || !samples.length) return;
     var hit;
     if (docY <= start + 0.01) {
@@ -820,12 +838,6 @@
       hit = { x: samples[lastI].x, y: samples[lastI].y, i0: lastI };
     } else {
       hit = findAtY(docY);
-    }
-    if (trail) {
-      var td = 'M' + samples[0].x + ',' + samples[0].y;
-      for (var i4 = 1; i4 <= hit.i0; i4++) td += ' L' + samples[i4].x + ',' + samples[i4].y;
-      td += ' L' + hit.x.toFixed(1) + ',' + hit.y.toFixed(1);
-      trail.setAttribute('d', td);
     }
     if (!mark) return;
     var lw = wrap.offsetWidth || wrap.clientWidth || 1;
@@ -837,15 +849,19 @@
     var ang = Math.atan2((hit.y - back.y) * sy, (hit.x - back.x) * sx) * 180 / Math.PI;
     // asset points right; never rotate past vertical — mirror instead
     var r = ((ang % 360) + 540) % 360 - 180;
+    var j = reduce ? { x: 0, y: 0, r: 0 } : jitter(t || 0);
+    r += j.r;
     var flip = '';
     if (r > 90 || r < -90) { r = ((r + 180) % 360 + 540) % 360 - 180; flip = ' scaleX(-1)'; }
-    // mark is position:fixed: its screen y is the trail's own endpoint
-    // converted to viewport space, so the two always coincide exactly —
-    // that lands on viewport-center whenever the target wasn't clamped,
-    // and gracefully falls back to the path's resting position otherwise.
+    // mark is position:fixed: its screen y tracks the path's own point
+    // converted to viewport space, landing on viewport-center whenever the
+    // target wasn't clamped, and gracefully falling back to the path's
+    // resting position otherwise. The jitter offset rides on top, in
+    // screen px, so it never fights the underlying flight math.
     var scrollNow = window.scrollY || document.documentElement.scrollTop || 0;
     var screenY = (hit.y - scrollNow) * sy;
-    mark.style.transform = 'translate(' + (hit.x * sx).toFixed(1) + 'px,' + screenY.toFixed(1) + 'px) rotate(' + r.toFixed(1) + 'deg)' + flip;
+    var screenX = hit.x * sx;
+    mark.style.transform = 'translate(' + (screenX + j.x).toFixed(1) + 'px,' + (screenY + j.y).toFixed(1) + 'px) rotate(' + r.toFixed(1) + 'deg)' + flip;
   }
 
   function syncButterfly() {
@@ -859,28 +875,36 @@
   function tick() {
     raf = null; // clear the handle FIRST: an early return must not strand it
     if (!len) return;
-    var t = target();
-    if (!isFinite(t)) t = start;
-    if (shown !== null && !isFinite(shown)) shown = t;
-    if (reduce) { shown = t; paint(t); raf = null; return; }
-    if (shown === null) shown = t;
+    var targetY = target();
+    if (!isFinite(targetY)) targetY = start;
+    if (shown !== null && !isFinite(shown)) shown = targetY;
+    if (reduce) { shown = targetY; paint(targetY, 0); raf = null; return; }
+    if (shown === null) shown = targetY;
+    var tSec = performance.now() / 1000;
     try {
-      if (Math.abs(t - shown) < 0.4) {
-        if (shown !== t) { shown = t; paint(shown); }
-        return; // settled: idle until the next scroll or watchdog beat
+      if (Math.abs(targetY - shown) < 0.4) {
+        paint(shown, tSec); // still settled on scroll position, but the
+        // continuous jitter keeps painting every frame — a live butterfly
+        // never holds perfectly still even when it isn't going anywhere.
+      } else {
+        shown += (targetY - shown) * 0.09;
+        paint(shown, tSec);
+        if (!flying) { flying = true; syncButterfly(); }
+        clearTimeout(slowT);
+        slowT = setTimeout(function () { flying = false; syncButterfly(); }, 260);
       }
-      shown += (t - shown) * 0.09;
-      paint(shown);
-      if (!flying) { flying = true; syncButterfly(); }
-      clearTimeout(slowT);
-      slowT = setTimeout(function () { flying = false; syncButterfly(); }, 260);
     } catch (e) { /* a throw must not strand the loop */ }
-    raf = requestAnimationFrame(tick);
+    if (!document.hidden) raf = requestAnimationFrame(tick);
   }
   function scheduleDraw() {
     if (raf) cancelAnimationFrame(raf);
     raf = requestAnimationFrame(tick);
   }
+  // A backgrounded tab stops the rAF loop (see tick's guard above) so the
+  // idle flutter doesn't burn battery/CPU off-screen; resume on return.
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) scheduleDraw();
+  });
 
   var rt;
   function onResize() { clearTimeout(rt); rt = setTimeout(build, 140); }
