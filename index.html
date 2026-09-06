@@ -544,7 +544,7 @@
   var BAKED = [[1.0818,0.0023],[0.8768,0.0131],[0.3885,0.0244],[0.2479,0.0273],[0.1802,0.0296],[0.0902,0.0354],[0.0292,0.0403],[-0.0232,0.0496],[-0.059,0.0609],[-0.0963,0.0769],[-0.12,0.09],[-0.1334,0.1065],[-0.1318,0.121],[-0.0759,0.1352],[0.002,0.1419],[0.0988,0.1465],[0.1953,0.15],[0.3444,0.1544],[0.4546,0.157],[0.5766,0.1608],[0.7107,0.1642],[0.7918,0.1669],[0.8835,0.1709],[0.9614,0.1756],[1.0461,0.1843],[1.0971,0.193],[1.131,0.2063],[1.1479,0.22],[1.153,0.229],[1.1428,0.2409],[1.0649,0.2545],[0.9802,0.2591],[0.8937,0.2623],[0.8174,0.2649],[0.7107,0.2673],[0.5887,0.2687],[0.5005,0.2702],[0.3853,0.2734],[0.3022,0.2763],[0.2039,0.28],[0.1292,0.2832],[0.0429,0.2893],[-0.0216,0.2963],[-0.0912,0.3073],[-0.12,0.3178],[-0.1404,0.3317],[-0.1318,0.3445],[-0.0692,0.3566],[0.0106,0.3613],[0.1004,0.3645],[0.1834,0.3656],[0.2681,0.3656],[0.375,0.3659],[0.4648,0.3659],[0.5903,0.3671],[0.7005,0.3677],[0.8174,0.3709],[0.8547,0.3729],[0.9563,0.3784],[1.024,0.3851],[1.0971,0.3967],[1.1377,0.4098],[1.1648,0.4246],[1.1853,0.4382],[1.1834,0.4571],[1.1648,0.4704],[1.1243,0.4837],[1.0444,0.4939],[0.97,0.4988],[0.8563,0.5032],[0.7666,0.5046],[0.6564,0.5046],[0.6037,0.4985],[0.636,0.4875],[0.7037,0.4811],[0.7918,0.4811],[0.8547,0.4896],[0.8241,0.5032],[0.7292,0.5073],[0.636,0.509],[0.5395,0.5093],[0.4377,0.5093],[0.3514,0.5104],[0.2412,0.5128],[0.1378,0.5165],[0.063,0.5212],[-0.0181,0.5287],[-0.0912,0.538],[-0.1369,0.5496],[-0.1554,0.5638],[-0.164,0.5769],[-0.1216,0.5879],[-0.0504,0.5949],[0.0327,0.5987],[0.1173,0.6004],[0.1953,0.6021],[0.3191,0.6027],[0.4258,0.6027],[0.5785,0.6039],[0.6954,0.605],[0.8563,0.6074],[1.0461,0.6123],[1.1444,0.6196],[1.2038,0.6274],[1.2597,0.6407],[1.2683,0.6576],[1.2565,0.6715],[1.2124,0.6851],[1.1208,0.693],[1.0224,0.6979],[0.9429,0.7011],[0.8429,0.704],[0.7292,0.706],[0.5986,0.7086],[0.4003,0.7107],[0.2106,0.7142],[0.0528,0.7211],[-0.0232,0.7258],[-0.0861,0.7345],[-0.1114,0.7455],[-0.0979,0.7606],[-0.0555,0.7713],[0.0292,0.778],[0.1141,0.7803],[0.2055,0.7809],[0.2869,0.7812],[0.392,0.7824],[0.4801,0.7832],[0.6107,0.7844],[0.7666,0.7858],[0.9141,0.7908],[1.0361,0.7963],[1.1326,0.8044],[1.1783,0.8189],[1.1683,0.834],[1.1192,0.8462],[1.0581,0.8546],[0.9665,0.8636],[0.8512,0.8703],[0.6768,0.8767],[0.5156,0.8831],[0.392,0.8903],[0.3122,0.8973],[0.1869,0.9083],[0.0886,0.9173],[0.0039,0.9266],[-0.0928,0.9359],[-0.2132,0.9457],[-0.2691,0.9541],[-0.3301,0.9689]];
 
   var len = 0, shown = null, samples = [], start = 0, end = 1;
-  var raf = null, flying = false, slowT = null;
+  var raf = null, flying = false;
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Catmull-Rom -> cubic bezier, tension 0.42. No corners, no right angles.
@@ -815,21 +815,30 @@
     return { x: s[s.length - 1].x, y: s[s.length - 1].y, i0: s.length - 1 };
   }
 
-  // Small continuous wander, independent of scroll — a handful of
-  // incommensurate sines rather than one clean cycle, so it never
-  // resolves into a repeating loop a viewer can predict. Kept subtle
-  // (a few px, a few degrees) so it reads as a live wing/body adjusting
-  // rather than a wobble bolted onto the flight.
-  function jitter(t) {
-    return {
-      x: Math.sin(t * 0.9) * 2.2 + Math.sin(t * 2.3 + 1.7) * 1.1 + Math.sin(t * 5.1 + 0.3) * 0.5,
-      y: Math.sin(t * 1.3 + 0.5) * 2.0 + Math.sin(t * 3.1 + 2.1) * 0.9 + Math.sin(t * 6.7 + 1.1) * 0.4,
-      r: Math.sin(t * 1.7 + 0.9) * 6 + Math.sin(t * 4.3 + 2.5) * 3
-    };
+  // ── Flight simulation ──────────────────────────────────────────────
+  // The butterfly is NOT positioned on the path. It has its own position
+  // and velocity in screen px and STEERS toward a target that rides the
+  // path, so the path guides it rather than carrying it. Everything that
+  // reads as "alive" comes from this being a force model rather than an
+  // interpolation: it overshoots, lags, drifts off-axis and corrects.
+  var bx = null, by = null;   // position, screen px
+  var bvx = 0, bvy = 0;       // velocity, px/s
+  var beat = 0;               // wingbeat phase, radians
+  var heading = 0;            // rendered body angle, degrees
+  var wanderAng = Math.random() * Math.PI * 2;
+  var yaw = 0;                // body angle offset from travel direction
+
+  // Underdamped on purpose: zeta ~0.74, so it arrives with a small
+  // overshoot and settles, instead of the dead exponential glide an
+  // ease-toward-target gives you.
+  var K = 26;      // spring stiffness toward the target
+  var DAMP = 7.5;  // velocity damping
+
+  function shortestDelta(from, to) {
+    return ((to - from + 540) % 360) - 180;
   }
 
-  function paint(docY, t) {
-    if (!path.getAttribute('d') || !samples.length) return;
+  function pathPoint(docY) {
     var hit;
     if (docY <= start + 0.01) {
       hit = { x: samples[0].x, y: samples[0].y, i0: 0 };
@@ -839,29 +848,104 @@
     } else {
       hit = findAtY(docY);
     }
-    if (!mark) return;
+    return hit;
+  }
+
+  function paint(docY, dt, snap) {
+    if (!path.getAttribute('d') || !samples.length || !mark) return;
+    var hit = pathPoint(docY);
     var lw = wrap.offsetWidth || wrap.clientWidth || 1;
     var lh = wrap.scrollHeight || wrap.offsetHeight || 1;
     var sx = lw / (svg.viewBox.baseVal.width || lw);
     var sy = lh / (svg.viewBox.baseVal.height || lh);
-    // heading from a short lookback along the sampled path
-    var back = samples[Math.max(0, hit.i0 - 1)];
-    var ang = Math.atan2((hit.y - back.y) * sy, (hit.x - back.x) * sx) * 180 / Math.PI;
-    // asset points right; never rotate past vertical — mirror instead
-    var r = ((ang % 360) + 540) % 360 - 180;
-    var j = reduce ? { x: 0, y: 0, r: 0 } : jitter(t || 0);
-    r += j.r;
-    var flip = '';
-    if (r > 90 || r < -90) { r = ((r + 180) % 360 + 540) % 360 - 180; flip = ' scaleX(-1)'; }
-    // mark is position:fixed: its screen y tracks the path's own point
-    // converted to viewport space, landing on viewport-center whenever the
-    // target wasn't clamped, and gracefully falling back to the path's
-    // resting position otherwise. The jitter offset rides on top, in
-    // screen px, so it never fights the underlying flight math.
     var scrollNow = window.scrollY || document.documentElement.scrollTop || 0;
-    var screenY = (hit.y - scrollNow) * sy;
-    var screenX = hit.x * sx;
-    mark.style.transform = 'translate(' + (screenX + j.x).toFixed(1) + 'px,' + (screenY + j.y).toFixed(1) + 'px) rotate(' + r.toFixed(1) + 'deg)' + flip;
+
+    // Where it WANTS to be: the path point, in viewport coordinates.
+    var tx = hit.x * sx;
+    var ty = (hit.y - scrollNow) * sy;
+
+    // First frame, an explicit snap (print), or reduced motion: sit
+    // exactly on the target, facing along the path.
+    if (bx === null || by === null || reduce || snap) {
+      bx = tx; by = ty; bvx = 0; bvy = 0;
+      var back0 = samples[Math.max(0, hit.i0 - 1)];
+      heading = Math.atan2((hit.y - back0.y) * sy, (hit.x - back0.x) * sx) * 180 / Math.PI;
+      render(0);
+      return;
+    }
+    // A rebuild (font reflow, resize) re-renders without stepping the
+    // simulation, so changing geometry never teleports it or kills its
+    // momentum — the spring just pulls toward the new target.
+    if (!dt) { render(Math.hypot(bvx, bvy)); return; }
+
+    // Spring toward the target …
+    var ax = (tx - bx) * K - bvx * DAMP;
+    var ay = (ty - by) * K - bvy * DAMP;
+
+    // … plus a wander force on a random-walking heading. A random walk,
+    // not a sine: sines are periodic, and anything periodic eventually
+    // reads as a mechanism. This is what keeps it from ever tracing the
+    // same arc twice.
+    wanderAng += (Math.random() - 0.5) * 7 * dt;
+    ax += Math.cos(wanderAng) * 110;
+    ay += Math.sin(wanderAng) * 110;
+
+    // Occasional flit: a real butterfly changes direction in abrupt
+    // little jinks, not smooth curves. ~0.6/second.
+    if (Math.random() < dt * 0.6) {
+      var fa = Math.random() * Math.PI * 2;
+      var fm = 40 + Math.random() * 70;
+      bvx += Math.cos(fa) * fm;
+      bvy += Math.sin(fa) * fm;
+    }
+
+    bvx += ax * dt;
+    bvy += ay * dt;
+    bx += bvx * dt;
+    by += bvy * dt;
+
+    var speed = Math.hypot(bvx, bvy);
+
+    // Wingbeat drives the bob — the signature butterfly cue. Beats faster
+    // when working harder, and the bob rides on render only so it never
+    // fights the spring.
+    beat += (9 + Math.min(14, speed * 0.03)) * dt;
+
+    // Heading follows ACTUAL travel, and lags it, so the body turns after
+    // the move rather than with it. The speed gate has to sit well above
+    // the idle drift: while hovering, the flits alone are enough to point
+    // the velocity vector in a random direction every few frames, and a
+    // low gate turns a perched butterfly into a spinning compass needle.
+    // Below the gate it eases back to the path's own direction instead —
+    // a resting attitude rather than a random one.
+    var back = samples[Math.max(0, hit.i0 - 1)];
+    var tangent = Math.atan2((hit.y - back.y) * sy, (hit.x - back.x) * sx) * 180 / Math.PI;
+    if (speed > 35) {
+      var want = Math.atan2(bvy, bvx) * 180 / Math.PI;
+      heading += shortestDelta(heading, want) * Math.min(1, dt * 6);
+    } else {
+      heading += shortestDelta(heading, tangent) * Math.min(1, dt * 1.5);
+    }
+    // Body angle wanders a few degrees off the direction of travel.
+    yaw += (Math.random() - 0.5) * 40 * dt;
+    yaw = Math.max(-9, Math.min(9, yaw * 0.98));
+
+    // Wing-beat GIF keys off real speed now, not scroll deltas. Threshold
+    // sits just under the mean speed while chasing a scrolling target, so
+    // it beats fast while actually travelling and rests while hovering.
+    var wantFast = speed > 35;
+    if (wantFast !== flying) { flying = wantFast; syncButterfly(); }
+
+    render(speed);
+  }
+
+  function render(speed) {
+    var bob = reduce ? 0 : Math.sin(beat) * (3 + Math.min(4, speed * 0.012));
+    var r = ((heading + yaw) % 360 + 540) % 360 - 180;
+    var flip = '';
+    // asset points right; never rotate past vertical — mirror instead
+    if (r > 90 || r < -90) { r = ((r + 180) % 360 + 540) % 360 - 180; flip = ' scaleX(-1)'; }
+    mark.style.transform = 'translate(' + bx.toFixed(1) + 'px,' + (by + bob).toFixed(1) + 'px) rotate(' + r.toFixed(1) + 'deg)' + flip;
   }
 
   function syncButterfly() {
@@ -869,32 +953,27 @@
     if (mark.getAttribute('src') !== want) mark.setAttribute('src', want);
   }
 
-  // Ease the drawn position toward the scroll-derived target at 9% of the
-  // remaining distance per frame — this is the whole "fluid, not
-  // scroll-linked" feel of the piece.
+  // The loop just advances the simulation. There's no easing here any
+  // more: the spring in paint() supplies the lag and overshoot, and
+  // stacking an ease on top of it only made the motion mushy.
+  var lastFrame = null;
   function tick() {
     raf = null; // clear the handle FIRST: an early return must not strand it
     if (!len) return;
     var targetY = target();
     if (!isFinite(targetY)) targetY = start;
-    if (shown !== null && !isFinite(shown)) shown = targetY;
-    if (reduce) { shown = targetY; paint(targetY, 0); raf = null; return; }
-    if (shown === null) shown = targetY;
-    var tSec = performance.now() / 1000;
+    shown = targetY;
+    if (reduce) { paint(targetY, 0); raf = null; return; }
+    var now = performance.now();
+    // Clamp dt so a backgrounded tab or a long frame can't fling the
+    // butterfly across the page when the loop resumes.
+    var dt = lastFrame === null ? 0 : Math.min(0.05, (now - lastFrame) / 1000);
+    lastFrame = now;
     try {
-      if (Math.abs(targetY - shown) < 0.4) {
-        paint(shown, tSec); // still settled on scroll position, but the
-        // continuous jitter keeps painting every frame — a live butterfly
-        // never holds perfectly still even when it isn't going anywhere.
-      } else {
-        shown += (targetY - shown) * 0.09;
-        paint(shown, tSec);
-        if (!flying) { flying = true; syncButterfly(); }
-        clearTimeout(slowT);
-        slowT = setTimeout(function () { flying = false; syncButterfly(); }, 260);
-      }
+      paint(targetY, dt);
     } catch (e) { /* a throw must not strand the loop */ }
     if (!document.hidden) raf = requestAnimationFrame(tick);
+    else lastFrame = null;
   }
   function scheduleDraw() {
     if (raf) cancelAnimationFrame(raf);
@@ -915,13 +994,16 @@
   window.addEventListener('touchmove', scheduleDraw, { passive: true });
   window.addEventListener('resize', onResize);
   window.addEventListener('beforeprint', function () {
-    if (path.getAttribute('d')) { shown = end; paint(shown); }
+    if (path.getAttribute('d')) { shown = end; paint(shown, 0, true); }
   });
 
-  // Scroll events are not guaranteed to reach every host; a cheap watchdog
-  // re-arms the idle loop whenever the target has moved.
+  // Under reduced motion the loop paints once and stops, so it depends on
+  // scroll events — which are not guaranteed to reach every host. This
+  // watchdog re-arms it whenever the target has actually moved. (With
+  // motion enabled the loop self-schedules every frame and this is a
+  // no-op, since `shown` already tracks the target exactly.)
   setInterval(function () {
-    if (!len) return;
+    if (!len || raf) return;
     if (shown === null || Math.abs(target() - shown) > 0.4) {
       raf = requestAnimationFrame(tick);
     }
