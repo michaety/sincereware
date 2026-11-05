@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-KSKKZHC4"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9GLG9RW1C5"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
+  // Visit any page once with ?notrack to stop counting this browser (our own visits).
+  try { if (/[?&]notrack/.test(location.search)) localStorage.setItem('hevin-notrack', '1'); if (localStorage.getItem('hevin-notrack')) window['ga-disable-G-9GLG9RW1C5'] = true; } catch (e) {}
+  gtag('config', 'G-9GLG9RW1C5');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Sincereware — Software for humans</title>
