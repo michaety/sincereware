@@ -152,21 +152,22 @@
       <div class="sw-2col" style="display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: start;">
         <div>
           <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: #c42f1f;">01</div>
-          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.68); margin-top: 6px;">The device</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.68); margin-top: 6px;">What it is</div>
         </div>
         <div>
           <h2 data-reveal="1" style="font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: clamp(30px, 4.4vw, 54px); line-height: 1.06; letter-spacing: -0.02em; margin: 0 0 18px; max-width: 22ch;">The Sincereware Receipt.</h2>
-          <p data-reveal="2" style="font-size: 16.5px; line-height: 1.7; margin: 0 0 clamp(24px, 4vh, 40px); color: rgba(22,19,15,0.78); max-width: 56ch;">Six plain lines, published inside the product and readable in thirty seconds. If a line can't be answered plainly, there's a decision left to make.</p>
+          <p data-reveal="2" style="font-size: 16.5px; line-height: 1.7; margin: 0 0 10px; color: rgba(22,19,15,0.78); max-width: 56ch;">A receipt is the deal, on one screen. Before you sign up or pay, it answers the six questions people actually have, in plain words anyone can read in thirty seconds.</p>
+          <p style="font-size: 16.5px; line-height: 1.7; margin: 0 0 clamp(24px, 4vh, 40px); color: rgba(22,19,15,0.78); max-width: 56ch;">It sits next to the privacy policy and terms, not instead of them: they hold the legal detail, the receipt is the honest summary, and the two must never disagree. Every line has to be checkable in the product itself. If a question can't be answered plainly, the product still has a decision to make.</p>
           <div style="display: grid; grid-template-columns: minmax(0, 520px); align-items: start;">
             <div data-reveal="4" style="border: 1px solid #16130f; background: #fbfaf6;">
               <div style="border-bottom: 1px solid rgba(22,19,15,0.2); padding: 12px 18px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;">Sincereware Receipt</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.68);">Template</span></div>
               <dl style="margin: 0; padding: 18px; font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; line-height: 1.85; display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 0 8px;">
-                <dt style="color: #1b3fd0;">Free</dt><dd style="margin: 0; color: rgba(22,19,15,0.68);">the core capability that stays genuinely useful</dd>
-                <dt style="color: #1b3fd0;">Paid</dt><dd style="margin: 0; color: rgba(22,19,15,0.68);">specific features, services, or ongoing costs</dd>
-                <dt style="color: #1b3fd0;">Data</dt><dd style="margin: 0; color: rgba(22,19,15,0.68);">what is collected, in plain language</dd>
-                <dt style="color: #1b3fd0;">Never sold</dt><dd style="margin: 0; color: rgba(22,19,15,0.68);">data, attention, behavioural profiles</dd>
-                <dt style="color: #1b3fd0;">Leaving</dt><dd style="margin: 0; color: rgba(22,19,15,0.68);">export, deletion, and what stays yours</dd>
-                <dt style="color: #1b3fd0;">Growth</dt><dd style="margin: 0; color: rgba(22,19,15,0.68);">what changes for users as the product scales</dd>
+                <dt style="color: #1b3fd0;">Free</dt><dd style="margin: 0; color: rgba(22,19,15,0.68);">What do I get without paying?</dd>
+                <dt style="color: #1b3fd0;">Paid</dt><dd style="margin: 0; color: rgba(22,19,15,0.68);">What costs money, and how much?</dd>
+                <dt style="color: #1b3fd0;">Data</dt><dd style="margin: 0; color: rgba(22,19,15,0.68);">What do you collect about me?</dd>
+                <dt style="color: #1b3fd0;">Never sold</dt><dd style="margin: 0; color: rgba(22,19,15,0.68);">What will you never sell, or use for ads?</dd>
+                <dt style="color: #1b3fd0;">Leaving</dt><dd style="margin: 0; color: rgba(22,19,15,0.68);">How do I take my data and go?</dd>
+                <dt style="color: #1b3fd0;">Growth</dt><dd style="margin: 0; color: rgba(22,19,15,0.68);">What changes for me as you grow?</dd>
                 </dl>
               <div style="border-top: 1px solid rgba(22,19,15,0.2); padding: 11px 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
                 <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(22,19,15,0.68);">Six lines, plain language</span>
@@ -365,13 +366,13 @@
   var copyBtn = document.getElementById('sw-copy-receipt');
   if (copyBtn) {
     var receiptText = [
-      'Sincereware Receipt',
-      'Free: ',
-      'Paid: ',
-      'Data: ',
-      'Never sold: ',
-      'Leaving: ',
-      'Growth: '
+      'Sincereware Receipt: the deal, in six plain lines. Full detail is in our privacy policy and terms.',
+      'Free (what you get without paying): ',
+      'Paid (what costs money, and how much): ',
+      'Data (what we collect about you): ',
+      'Never sold (what we never sell or use for ads): ',
+      'Leaving (how to take your data and go): ',
+      'Growth (what changes for you as we grow): '
     ].join('\n');
     var resetTimer;
     copyBtn.addEventListener('click', function () {
