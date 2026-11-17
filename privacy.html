@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<script>
+// Usage stats: the Hevin Design analytics standard (17 Nov 2026), one copy per site with its own ID.
+// On by default. Off in one tap from the footer. Off automatically when the browser sends Global Privacy
+// Control or Do Not Track. When off, Google's script is never loaded and its cookies are removed.
+// No ads, no Google signals, no cookies in the EEA, UK or Switzerland, and the page address is sent
+// without anything after "?".
+(function () {
+  var ID = 'G-9GLG9RW1C5', KEY = 'usage-stats';
+  var ls = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+  if (/[?&]notrack/.test(location.search) || ls.get('hevin-notrack') || ls.get('notrack')) ls.set(KEY, 'off');
+  var asked = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1' || window.doNotTrack === '1';
+  var choice = ls.get(KEY), on = choice ? choice === 'on' : !asked, loaded = false;
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  function start() {
+    window['ga-disable-' + ID] = false;
+    if (loaded) return; loaded = true;
+    gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
+      region: ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH'] });
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+    gtag('js', new Date());
+    gtag('config', ID, { allow_google_signals: false, allow_ad_personalization_signals: false,
+      page_location: location.origin + location.pathname, page_referrer: document.referrer ? document.referrer.split(/[?#]/)[0] : '' });
+    var s = document.createElement('script'); s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ID; document.head.appendChild(s);
+  }
+  function stop() {
+    window['ga-disable-' + ID] = true;
+    var host = location.hostname.replace(/^www\./, '');
+    document.cookie.split(';').forEach(function (c) {
+      var n = c.split('=')[0].trim();
+      if (/^_ga/.test(n)) ['', '; domain=' + host, '; domain=.' + host].forEach(function (d) { document.cookie = n + '=; Max-Age=0; path=/' + d; });
+    });
+  }
+  if (on) start(); else window['ga-disable-' + ID] = true;
+  window.usageStats = { isOn: function () { return on; }, browserAsked: asked,
+    set: function (v) { on = !!v; ls.set(KEY, on ? 'on' : 'off'); if (on) start(); else stop(); } };
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Privacy · Sincereware</title>
+<meta name="description" content="What sincereware.net records when you visit, how long it is kept, and how to turn it off." />
+<meta name="theme-color" content="#f4f1ea" />
+<link rel="canonical" href="https://sincereware.net/privacy" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32" />
+<style>
+  @font-face { font-family: 'Newsreader'; font-style: normal; font-weight: 300 500; font-display: swap; src: url(assets/fonts/newsreader-var.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Newsreader'; font-style: italic; font-weight: 400; font-display: swap; src: url(assets/fonts/newsreader-italic.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  html, body { margin: 0; }
+  body { background: #f4f1ea; color: #16130f; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16.5px; line-height: 1.7; }
+  main { max-width: 680px; margin: 0 auto; padding: clamp(28px, 6vh, 64px) clamp(20px, 5vw, 64px) 48px; }
+  a { color: #1b3fd0; }
+  .home { font-family: Newsreader, Georgia, serif; font-size: 21px; color: #16130f; text-decoration: none; letter-spacing: -0.01em; }
+  h1 { font-family: Newsreader, Georgia, serif; font-weight: 300; font-size: clamp(40px, 7vw, 64px); line-height: 1; letter-spacing: -0.02em; margin: clamp(28px, 6vh, 56px) 0 8px; }
+  h2 { font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 24px; letter-spacing: -0.01em; margin: 34px 0 6px; }
+  p { margin: 0 0 12px; color: rgba(22,19,15,0.82); max-width: 62ch; }
+  .when { font-size: 14px; color: rgba(22,19,15,0.62); }
+  button#usage-toggle { font: inherit; color: #1b3fd0; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+  footer { border-top: 1px solid rgba(22,19,15,0.16); margin-top: 40px; padding-top: 16px; font-size: 13px; color: rgba(22,19,15,0.62); }
+</style>
+</head>
+<body>
+<main>
+  <a class="home" href="/">Sincereware</a>
+  <h1>Privacy</h1>
+  <p class="when">Last updated 17 November 2026</p>
+
+  <h2>Who is responsible</h2>
+  <p>Sincereware is a product standard published by Hevin Design (ABN 58 368 892 845), a sole trader business in New South Wales, Australia. Contact: <a href="mailto:hello@hevin.design">hello@hevin.design</a>.</p>
+
+  <h2>What is collected</h2>
+  <p>This site has no accounts and no forms. The only thing it records is usage stats, through Google Analytics: which page was viewed, the type of device and browser, and an approximate location that Google works out from your IP address. The page address is sent without anything after a question mark.</p>
+
+  <h2>What it is never used for</h2>
+  <p>Usage stats are never sold, never used for ads and never linked to a name or email. Google signals and ad personalisation are switched off. No Google Ads account is connected.</p>
+
+  <h2>Cookies</h2>
+  <p>Google Analytics sets its own cookies so a return visit counts as the same visitor. In the European Economic Area, the United Kingdom and Switzerland it sets no cookies and Google gets an anonymous page count only.</p>
+
+  <h2>How long it is kept</h2>
+  <p>Two months, the shortest period Google Analytics allows.</p>
+
+  <h2>Turning it off</h2>
+  <p><button type="button" id="usage-toggle" aria-pressed="true">usage stats: on</button></p>
+  <p>Switch it off here or at the foot of the home page. Once off, Google's script is not loaded at all and its cookies are removed. It stays off in this browser. If your browser sends Global Privacy Control or Do Not Track, usage stats start switched off.</p>
+
+  <h2>Who else sees a visit</h2>
+  <p>Cloudflare hosts the site and handles each request, which means it processes your IP address to deliver the page and protect it from abuse.</p>
+
+  <footer>Sincereware v0.2 &middot; a product standard by <a href="https://hevin.design">hevin.design</a></footer>
+</main>
+<script>
+(function () {
+  var b = document.getElementById('usage-toggle'); if (!b || !window.usageStats) return;
+  function paint() { var o = usageStats.isOn(); b.textContent = 'usage stats: ' + (o ? 'on' : 'off'); b.setAttribute('aria-pressed', o ? 'true' : 'false'); }
+  b.addEventListener('click', function () { usageStats.set(!usageStats.isOn()); paint(); });
+  paint();
+})();
+</script>
+</body>
+</html>

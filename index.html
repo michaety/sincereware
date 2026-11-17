@@ -2,14 +2,43 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9GLG9RW1C5"></script>
 <script>
+// Usage stats: the Hevin Design analytics standard (17 Nov 2026), one copy per site with its own ID.
+// On by default. Off in one tap from the footer. Off automatically when the browser sends Global Privacy
+// Control or Do Not Track. When off, Google's script is never loaded and its cookies are removed.
+// No ads, no Google signals, no cookies in the EEA, UK or Switzerland, and the page address is sent
+// without anything after "?".
+(function () {
+  var ID = 'G-9GLG9RW1C5', KEY = 'usage-stats';
+  var ls = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+  if (/[?&]notrack/.test(location.search) || ls.get('hevin-notrack') || ls.get('notrack')) ls.set(KEY, 'off');
+  var asked = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1' || window.doNotTrack === '1';
+  var choice = ls.get(KEY), on = choice ? choice === 'on' : !asked, loaded = false;
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  // Visit any page once with ?notrack to stop counting this browser (our own visits).
-  try { if (/[?&]notrack/.test(location.search)) localStorage.setItem('hevin-notrack', '1'); if (localStorage.getItem('hevin-notrack')) window['ga-disable-G-9GLG9RW1C5'] = true; } catch (e) {}
-  gtag('config', 'G-9GLG9RW1C5');
+  function gtag() { dataLayer.push(arguments); }
+  function start() {
+    window['ga-disable-' + ID] = false;
+    if (loaded) return; loaded = true;
+    gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
+      region: ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH'] });
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+    gtag('js', new Date());
+    gtag('config', ID, { allow_google_signals: false, allow_ad_personalization_signals: false,
+      page_location: location.origin + location.pathname, page_referrer: document.referrer ? document.referrer.split(/[?#]/)[0] : '' });
+    var s = document.createElement('script'); s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ID; document.head.appendChild(s);
+  }
+  function stop() {
+    window['ga-disable-' + ID] = true;
+    var host = location.hostname.replace(/^www\./, '');
+    document.cookie.split(';').forEach(function (c) {
+      var n = c.split('=')[0].trim();
+      if (/^_ga/.test(n)) ['', '; domain=' + host, '; domain=.' + host].forEach(function (d) { document.cookie = n + '=; Max-Age=0; path=/' + d; });
+    });
+  }
+  if (on) start(); else window['ga-disable-' + ID] = true;
+  window.usageStats = { isOn: function () { return on; }, browserAsked: asked,
+    set: function (v) { on = !!v; ls.set(KEY, on ? 'on' : 'off'); if (on) start(); else stop(); } };
+})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Sincereware — Software for humans</title>
@@ -343,8 +372,17 @@
     <div style="max-width: 1180px; margin: 0 auto; padding: 18px clamp(20px, 5vw, 64px) 26px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 24px; font-size: 13px; line-height: 1.7; color: rgba(22,19,15,0.62);">
       <span>Sincereware v0.2 &middot; a product standard by <a href="https://hevin.design">hevin.design</a></span>
       <span>v0.2, Nov 2026: one line for tools and games; claims cover what a product says is true; recurring prices need real ongoing cost.</span>
+      <span style="flex-basis: 100%;">This page counts visits with Google Analytics. Never sold, never used for ads, kept 2 months. <button type="button" id="usage-toggle" aria-pressed="true" style="font: inherit; color: #1b3fd0; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline;">usage stats: on</button> &middot; <a href="/privacy">Privacy</a></span>
     </div>
   </footer>
+<script>
+(function () {
+  var b = document.getElementById('usage-toggle'); if (!b || !window.usageStats) return;
+  function paint() { var o = usageStats.isOn(); b.textContent = 'usage stats: ' + (o ? 'on' : 'off'); b.setAttribute('aria-pressed', o ? 'true' : 'false'); }
+  b.addEventListener('click', function () { usageStats.set(!usageStats.isOn()); paint(); });
+  paint();
+})();
+</script>
 </div>
 
 <script>
